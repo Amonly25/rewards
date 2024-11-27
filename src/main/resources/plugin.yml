@@ -1,0 +1,12 @@
+main: com.ar.askgaming.rewards.RewardsPlugin
+name: Rewards
+version: 1.0
+author: AskGaming
+commands:
+  rewards:
+    description: Shows the rewards
+    usage: /rewards
+  crate:
+    description: Opens a crate
+    usage: /crate
+
