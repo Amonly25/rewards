@@ -1,25 +1,23 @@
 package com.ar.askgaming.rewards;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.TextDisplay;
-import org.bukkit.entity.Display.Billboard;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class Crate implements ConfigurationSerializable {
 
-    private RewardsPlugin plugin = RewardsPlugin.getPlugin(RewardsPlugin.class);
-
     private String name;
-    private String displayName;
     private double openCost;
     private boolean isKeyRequired;
     private ItemStack crateItem;
@@ -35,10 +33,14 @@ public class Crate implements ConfigurationSerializable {
     public Crate (String name, ItemStack item){
         if (item == null) {
             crateItem = new ItemStack(Material.CHEST);
+            ItemMeta meta = crateItem.getItemMeta();
+            meta.setDisplayName("§6" + name+" Crate");
+            meta.setEnchantmentGlintOverride(true);
+            crateItem.setItemMeta(meta);
+
         } else crateItem = item;
 
         this.name = name;
-        this.displayName = name + " Crate";
         this.openCost = 0;
         this.isKeyRequired = false;
         this.openFromInventory = true;
@@ -53,38 +55,39 @@ public class Crate implements ConfigurationSerializable {
     }
     public Crate(Map<String, Object> map) {
         this.name = (String) map.get("name");
-        this.displayName = (String) map.get("displayName");
         this.openCost = (double) map.get("openCost");
         this.isKeyRequired = (boolean) map.get("isKeyRequired");
         this.crateItem = (ItemStack) map.get("crateItem");
         this.openFromInventory = (boolean) map.get("openFromInventory");
         this.openByBlock = (boolean) map.get("openByBlock");
 
-        if ( map.get("openByBlock") instanceof Location){
+        if ( map.get("blockLinked") instanceof Location){
             Location loc = (Location) map.get("blockLinked");
             this.blockLinked = loc.getBlock();
+            createDefaultTextDisplay();
             
         }
         this.keyItem = (ItemStack) map.get("keyItem");
-        
-        if (map.get("rewards") instanceof ItemStack[]) {
-            this.rewards = (ItemStack[]) map.get("rewards");
-        } else {
-            this.rewards = new ItemStack[0];
 
-        }
+        Object object = map.get("rewards");
+        if (object instanceof ItemStack[]) {
+            this.rewards = (ItemStack[]) map.get("rewards");
+        } else if (object instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<ItemStack> list = (List<ItemStack>) object;
+            this.rewards = list.toArray(new ItemStack[0]);
+
+        } else rewards = new ItemStack[0];
+        
+
         this.broadcastReward = (boolean) map.get("broadcastReward");
 
-        if (blockLinked != null) {
-            createDefaultTextDisplay();
-        }
     }
     //#region Serialize
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
         map.put("name", name);
-        map.put("displayName", displayName);
         map.put("openCost", openCost);
         map.put("isKeyRequired", isKeyRequired);
         map.put("crateItem", crateItem);
@@ -101,23 +104,28 @@ public class Crate implements ConfigurationSerializable {
         map.put("broadcastReward", broadcastReward);
         return map;
     }
-    public void setDefaultKey() {
+    //#region defaultKey
+    public ItemStack setDefaultKey() {
         keyItem = new ItemStack(Material.TRIPWIRE_HOOK);
         ItemMeta meta = keyItem.getItemMeta();
-        meta.setDisplayName(name+" Key");
+        meta.setDisplayName("§6" + name+" Key");
+        meta.setEnchantmentGlintOverride(true);
         keyItem.setItemMeta(meta);
+        return keyItem;
     }
+    //#region defaultDis
     public void createDefaultTextDisplay() {
-        textDisplay = blockLinked.getWorld().spawn(blockLinked.getLocation().add(0.5, 1.5, 0.5), TextDisplay.class);
-        textDisplay.setText(displayName);
+        if (textDisplay != null) {
+            textDisplay.teleport(blockLinked.getLocation().add(0.5, 1.2, 0.5));
+            return;
+
+        }
+        textDisplay = blockLinked.getWorld().spawn(blockLinked.getLocation().add(0.5, 1.2, 0.5), TextDisplay.class);
+        textDisplay.setText(name + " Crate");
         textDisplay.setBillboard(Billboard.CENTER);
     }
     public String getName() {
         return name;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 
     public double getOpenCost() {
@@ -160,9 +168,6 @@ public class Crate implements ConfigurationSerializable {
         return itemDisplay;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
     public void setOpenCost(double openCost) {
         this.openCost = openCost;
     }
@@ -171,21 +176,23 @@ public class Crate implements ConfigurationSerializable {
         this.isKeyRequired = isKeyRequired;
     }
     public void setCrateItem(ItemStack crateItem) {
-        this.crateItem = crateItem;
+        this.crateItem = crateItem.clone();
     }
     public void setOpenFromInventory(boolean openFromInventory) {
         this.openFromInventory = openFromInventory;
     }
     public void setBlockLinked(Block blockLinked) {
         this.blockLinked = blockLinked;
-        createDefaultTextDisplay();
+        if (blockLinked != null) {
+            createDefaultTextDisplay();
+        }
         
     }
     public void setOpenByBlock(boolean openByBlock) {
         this.openByBlock = openByBlock;
     }
     public void setKeyItem(ItemStack keyItem) {
-        this.keyItem = keyItem;
+        this.keyItem = keyItem.clone();
     }
     public void setRewards(ItemStack[] rewards) {
         this.rewards = rewards;

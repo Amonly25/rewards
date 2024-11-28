@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -12,12 +14,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.ar.askgaming.rewards.Crate;
 import com.ar.askgaming.rewards.RewardsPlugin;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class CrateCommands implements TabExecutor {
 
@@ -79,7 +83,7 @@ public class CrateCommands implements TabExecutor {
             p.sendMessage("Usage: crate create <name>");
             return;
         }
-        String name = args[1];
+        String name = args[1].toLowerCase();
         if (plugin.getCrateManager().getCrates().containsKey(name)){
             p.sendMessage("Esa caja con ese nombre ya existe");
             return;
@@ -94,7 +98,7 @@ public class CrateCommands implements TabExecutor {
             p.sendMessage("Usage: crate delete <name>");
             return;
         }
-        String name = args[1];
+        String name = args[1].toLowerCase();
         if (!plugin.getCrateManager().getCrates().containsKey(name)){
             p.sendMessage("Esa caja no existe");
             return;
@@ -104,32 +108,43 @@ public class CrateCommands implements TabExecutor {
     }
     //#region set
     public void setCommand(Player p, String[] args){
-        if (args.length < 3) {
+        if (args.length < 2) {
             p.sendMessage("Usage: crate set <name> <key> <value>");
             return;
         }
-        String name = args[1];
-        if (!plugin.getCrateManager().getCrates().containsKey(name)){
+        String name = args[1].toLowerCase();
+        Crate crate = plugin.getCrateManager().getCrates().get(name);
+        if (crate == null){
             p.sendMessage("Esa caja no existe");
             return;
         }
-        Crate crate = plugin.getCrateManager().getCrates().get(name);
+
         String key = args[2];
         if (!setValue.contains(key)){
             p.sendMessage("Esa key no es valida");
             return;
         }
-        String value = args[3];
+        if (args.length == 3) {
+            handleThreeArgs(p, crate, key);
+        } else if (args.length == 4) {
+            handleFourArgs(p, crate, key, args[3]);
+        }
+    }
+    private List<String> setValue = List.of("keyrequerid","broadcastReward", "cost", "block", "rewards", "removeblock", "openfrominventory", "openbyblock", "textdisplay", "keyitem","crateitem");
+    
+    //#region handleThreeArgs
+    private void handleThreeArgs(Player p, Crate crate, String key) {
         switch (key) {
-            case "cost":
-                try {
-                    double cost = Double.parseDouble(value);
-                    crate.setOpenCost(cost);
-                    p.sendMessage("Cost set to "+cost);
-                    plugin.getCrateManager().save();
-                } catch (Exception e) {
-                    p.sendMessage("El valor debe ser un numero");
+            case "rewards":
+                if (plugin.getCrateManager().getEditing().containsKey(crate)) {
+                    p.sendMessage(crate.getName() + " ya esta siendo editada");
+                    return;
                 }
+                ItemStack[] rewards = crate.getRewards();
+                Inventory inv = Bukkit.createInventory(null, 27, "Updated rewards, close to save.");
+                inv.setContents(rewards);
+                plugin.getCrateManager().getEditing().put(crate, inv);
+                p.openInventory(inv);
                 break;
             case "block":
                 Set<Material> transparentMaterials = new HashSet<>(Arrays.asList(Material.AIR, Material.WATER));
@@ -140,106 +155,105 @@ public class CrateCommands implements TabExecutor {
                 crate.setBlockLinked(targetBlock);
                 crate.setOpenByBlock(true);
                 crate.setKeyRequired(true);
-                p.sendMessage("Block linked set to "+targetBlock.getType());
-                plugin.getCrateManager().save();
-                break;
-            case "rewards":
-                ItemStack[] rewards = p.getInventory().getContents();
-                crate.setRewards(rewards);
-                p.sendMessage("Rewards set from your inventory");
+                p.sendMessage("Block linked set to " + targetBlock.getType());
                 plugin.getCrateManager().save();
                 break;    
-            case "displayname":
-                crate.setDisplayName(ChatColor.translateAlternateColorCodes('&', value));
-                p.sendMessage("Display name set to "+value);
+            case "removeblock":
+                TextDisplay textDisplay = crate.getTextDisplay();
+                if (textDisplay != null) {
+                    textDisplay.remove();
+                }
+                p.sendMessage("Block linked removed");
                 plugin.getCrateManager().save();
-                break;    
-            case "openfrominventory":
-                try {
-                    boolean openFromInventory = Boolean.parseBoolean(value);
-                    crate.setOpenFromInventory(openFromInventory);
-                    p.sendMessage("Open from inventory set to "+openFromInventory);
-                    plugin.getCrateManager().save();
-                } catch (Exception e) {
-                    p.sendMessage("El valor debe ser un booleano");
-                }
-                break;   
-            case "openbyblock":
-                if (crate.getBlockLinked() == null){
-                    p.sendMessage("No hay block linked");
-                    return;
-                }
-                try {
-                    boolean openByBlock = Boolean.parseBoolean(value);
-                    crate.setOpenByBlock(openByBlock);
-                    p.sendMessage("Open by block set to "+openByBlock);
-                    plugin.getCrateManager().save();
-                } catch (Exception e) {
-                    p.sendMessage("El valor debe ser un booleano");
-                }
+                crate.setBlockLinked(null);
                 break;
-            case "textdisplay":
-                TextDisplay text = crate.getTextDisplay();
-                if (crate.getBlockLinked() == null){
-                    p.sendMessage("No hay block linked");
-                    return;
-
-                }
-                if (text == null){
-                    p.sendMessage("No hay text display");
-                    return;
-                }
-                
-                crate.getTextDisplay().setText(ChatColor.translateAlternateColorCodes('&', value));
-                plugin.getCrateManager().save();
-                p.sendMessage("Text display set to "+value);
-                break;     
             case "keyitem":
-                ItemStack keyItem = p.getInventory().getItemInMainHand();
-                if (keyItem == null || keyItem.getType().isAir()){
-                    p.sendMessage("No hay item en la mano");
-                    return;
-                }
-                crate.setKeyItem(keyItem);
-                plugin.getCrateManager().save();
-                p.sendMessage("Key item set to "+keyItem.getType());
+                setItemInHand(p, crate::setKeyItem, "Key item set to ");
                 break;
-            case "createitem":
-                ItemStack createItem = p.getInventory().getItemInMainHand();
-                if (createItem == null || createItem.getType().isAir()){
-                    p.sendMessage("No hay item en la mano");
-                    return;
-                }
-                crate.setCrateItem(createItem);
-                plugin.getCrateManager().save();
-                p.sendMessage("Crate item set to "+createItem.getType());
+            case "crateitem":
+                setItemInHand(p, crate::setCrateItem, "Crate item set to ");
                 break;
-            case "keyrequerid":
-                try {
-                    boolean keyRequired = Boolean.parseBoolean(value);
-                    crate.setKeyRequired(keyRequired);
-                    p.sendMessage("Key required set to "+keyRequired);
-                    plugin.getCrateManager().save();
-                } catch (Exception e) {
-                    p.sendMessage("El valor debe ser un booleano");
-                }
-                break;
-            case "broadcastReward":
-                try {
-                    boolean broadcastReward = Boolean.parseBoolean(value);
-                    crate.setBroadcastReward(broadcastReward);
-                    p.sendMessage("Broadcast reward set to "+broadcastReward);
-                    plugin.getCrateManager().save();
-                } catch (Exception e) {
-                    p.sendMessage("El valor debe ser un booleano");
-                }
-                break;
-                
             default:
+                p.sendMessage("Esa key no es valida");
                 break;
         }
-
     }
-    private List<String> setValue = List.of("keyrequerid","broadcastReward", "cost", "block", "rewards", "displayname", "openfrominventory", "openbyblock", "textdisplay", "keyitem","createitem");
+    //#region handleFourArgs
+    private void handleFourArgs(Player p, Crate crate, String key, String value) {
+        switch (key) {
+            case "cost":
+                setCost(p, crate, value);
+                break;
+            case "openfrominventory":
+                setBooleanValue(p, crate::setOpenFromInventory, value, "Open from inventory set to ");
+                break;
+            case "openbyblock":
+                if (crate.getBlockLinked() == null) {
+                    p.sendMessage("No hay block linked");
+                    return;
+                }
+                setBooleanValue(p, crate::setOpenByBlock, value, "Open by block set to ");
+                break;
+            case "textdisplay":
+                setTextDisplay(p, crate, value);
+                break;
+            case "keyrequerid":
+                setBooleanValue(p, crate::setKeyRequired, value, "Key required set to ");
+                break;
+            case "broadcastReward":
+                setBooleanValue(p, crate::setBroadcastReward, value, "Broadcast reward set to ");
+                break;
+            default:
+                p.sendMessage("Esa key no es valida");
+                break;
+        }
+    }
     
+    private void setCost(Player p, Crate crate, String value) {
+        try {
+            double cost = Double.parseDouble(value);
+            crate.setOpenCost(cost);
+            p.sendMessage("Cost set to " + cost);
+            plugin.getCrateManager().save();
+        } catch (NumberFormatException e) {
+            p.sendMessage("El valor debe ser un numero");
+        }
+    }
+    
+    private void setBooleanValue(Player p, Consumer<Boolean> setter, String value, String message) {
+        try {
+            boolean boolValue = Boolean.parseBoolean(value);
+            setter.accept(boolValue);
+            p.sendMessage(message + boolValue);
+            plugin.getCrateManager().save();
+        } catch (Exception e) {
+            p.sendMessage("El valor debe ser un booleano");
+        }
+    }
+    
+    private void setTextDisplay(Player p, Crate crate, String value) {
+        TextDisplay text = crate.getTextDisplay();
+        if (crate.getBlockLinked() == null) {
+            p.sendMessage("No hay block linked");
+            return;
+        }
+        if (text == null) {
+            p.sendMessage("No hay text display");
+            return;
+        }
+        text.setText(ChatColor.translateAlternateColorCodes('&', value));
+        plugin.getCrateManager().save();
+        p.sendMessage("Text display set to " + value);
+    }
+    
+    private void setItemInHand(Player p, Consumer<ItemStack> setter, String message) {
+        ItemStack item = p.getInventory().getItemInMainHand();
+        if (item == null || item.getType().isAir()) {
+            p.sendMessage("No hay item en la mano");
+            return;
+        }
+        setter.accept(item);
+        plugin.getCrateManager().save();
+        p.sendMessage(message + item.getType());
+    }
 }

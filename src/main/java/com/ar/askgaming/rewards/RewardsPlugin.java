@@ -6,11 +6,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.ar.askgaming.rewards.Commands.CrateCommands;
 import com.ar.askgaming.rewards.Commands.RewardsCommands;
 import com.ar.askgaming.rewards.Listeners.BlockBreakListener;
+import com.ar.askgaming.rewards.Listeners.CloseInventoryListener;
 import com.ar.askgaming.rewards.Listeners.InventoryClickListener;
-import com.ar.askgaming.rewards.Listeners.OpenCrateByInteractBlockListener;
 import com.ar.askgaming.rewards.Listeners.OpenInventoryListener;
 import com.ar.askgaming.rewards.Listeners.PlaceBlockListener;
-import com.ar.askgaming.rewards.Listeners.PlayerOpenCrateByInteractListener;
+import com.ar.askgaming.rewards.Listeners.PlayerInteractListener;
 
 public class RewardsPlugin extends JavaPlugin {
     
@@ -28,11 +28,11 @@ public class RewardsPlugin extends JavaPlugin {
         getServer().getPluginCommand("crate").setExecutor(new CrateCommands(this));
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
-        getServer().getPluginManager().registerEvents(new OpenCrateByInteractBlockListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryClickListener(this), this);
         getServer().getPluginManager().registerEvents(new PlaceBlockListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerOpenCrateByInteractListener(this), this);
         getServer().getPluginManager().registerEvents(new OpenInventoryListener(this), this);
+        getServer().getPluginManager().registerEvents(new CloseInventoryListener(this), this);
     }
 
     public void onDisable() {
