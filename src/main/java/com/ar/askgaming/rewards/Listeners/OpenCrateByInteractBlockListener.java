@@ -11,10 +11,10 @@ import org.bukkit.inventory.ItemStack;
 import com.ar.askgaming.rewards.Crate;
 import com.ar.askgaming.rewards.RewardsPlugin;
 
-public class PlayerInteractListener implements Listener{
+public class OpenCrateByInteractBlockListener implements Listener{
 
     private RewardsPlugin plugin;
-    public PlayerInteractListener(RewardsPlugin plugin){
+    public OpenCrateByInteractBlockListener(RewardsPlugin plugin){
         this.plugin = plugin;
     }
     @EventHandler
@@ -27,7 +27,9 @@ public class PlayerInteractListener implements Listener{
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         Crate crate = plugin.getCrateManager().getByBlock(b);
+        
         if (crate != null){
+            e.setCancelled(true);
             boolean hasKey = false;
             ItemStack key = plugin.getCrateManager().getKeyItem(crate);
             if (key == null){

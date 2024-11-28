@@ -29,7 +29,8 @@ public class CrateCommands implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
         if (args.length == 0) {
-            return false;
+            sender.sendMessage("Usage: /crate <create/delete/set/menu>");
+            return true;
         }
 
         if (!(sender instanceof Player)) {
@@ -57,7 +58,7 @@ public class CrateCommands implements TabExecutor {
                 break;
         }
         
-        return false;
+        return true;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class CrateCommands implements TabExecutor {
             p.sendMessage("Esa caja con ese nombre ya existe");
             return;
         }
-
+        p.sendMessage("Has creado la caja "+name);
         plugin.getCrateManager().createCrate(name, null);
 
     }
@@ -99,6 +100,7 @@ public class CrateCommands implements TabExecutor {
             return;
         }
         plugin.getCrateManager().deleteCrate(name);
+        p.sendMessage("Has eliminado la caja "+name);
     }
     //#region set
     public void setCommand(Player p, String[] args){
@@ -124,6 +126,7 @@ public class CrateCommands implements TabExecutor {
                     double cost = Double.parseDouble(value);
                     crate.setOpenCost(cost);
                     p.sendMessage("Cost set to "+cost);
+                    plugin.getCrateManager().save();
                 } catch (Exception e) {
                     p.sendMessage("El valor debe ser un numero");
                 }
@@ -135,22 +138,28 @@ public class CrateCommands implements TabExecutor {
                     return;
                 }
                 crate.setBlockLinked(targetBlock);
+                crate.setOpenByBlock(true);
+                crate.setKeyRequired(true);
                 p.sendMessage("Block linked set to "+targetBlock.getType());
+                plugin.getCrateManager().save();
                 break;
             case "rewards":
                 ItemStack[] rewards = p.getInventory().getContents();
                 crate.setRewards(rewards);
                 p.sendMessage("Rewards set from your inventory");
+                plugin.getCrateManager().save();
                 break;    
             case "displayname":
                 crate.setDisplayName(ChatColor.translateAlternateColorCodes('&', value));
                 p.sendMessage("Display name set to "+value);
+                plugin.getCrateManager().save();
                 break;    
             case "openfrominventory":
                 try {
                     boolean openFromInventory = Boolean.parseBoolean(value);
                     crate.setOpenFromInventory(openFromInventory);
                     p.sendMessage("Open from inventory set to "+openFromInventory);
+                    plugin.getCrateManager().save();
                 } catch (Exception e) {
                     p.sendMessage("El valor debe ser un booleano");
                 }
@@ -164,6 +173,7 @@ public class CrateCommands implements TabExecutor {
                     boolean openByBlock = Boolean.parseBoolean(value);
                     crate.setOpenByBlock(openByBlock);
                     p.sendMessage("Open by block set to "+openByBlock);
+                    plugin.getCrateManager().save();
                 } catch (Exception e) {
                     p.sendMessage("El valor debe ser un booleano");
                 }
@@ -181,6 +191,7 @@ public class CrateCommands implements TabExecutor {
                 }
                 
                 crate.getTextDisplay().setText(ChatColor.translateAlternateColorCodes('&', value));
+                plugin.getCrateManager().save();
                 p.sendMessage("Text display set to "+value);
                 break;     
             case "keyitem":
@@ -190,6 +201,7 @@ public class CrateCommands implements TabExecutor {
                     return;
                 }
                 crate.setKeyItem(keyItem);
+                plugin.getCrateManager().save();
                 p.sendMessage("Key item set to "+keyItem.getType());
                 break;
             case "createitem":
@@ -199,6 +211,7 @@ public class CrateCommands implements TabExecutor {
                     return;
                 }
                 crate.setCrateItem(createItem);
+                plugin.getCrateManager().save();
                 p.sendMessage("Crate item set to "+createItem.getType());
                 break;
             case "keyrequerid":
@@ -206,6 +219,7 @@ public class CrateCommands implements TabExecutor {
                     boolean keyRequired = Boolean.parseBoolean(value);
                     crate.setKeyRequired(keyRequired);
                     p.sendMessage("Key required set to "+keyRequired);
+                    plugin.getCrateManager().save();
                 } catch (Exception e) {
                     p.sendMessage("El valor debe ser un booleano");
                 }
@@ -215,6 +229,7 @@ public class CrateCommands implements TabExecutor {
                     boolean broadcastReward = Boolean.parseBoolean(value);
                     crate.setBroadcastReward(broadcastReward);
                     p.sendMessage("Broadcast reward set to "+broadcastReward);
+                    plugin.getCrateManager().save();
                 } catch (Exception e) {
                     p.sendMessage("El valor debe ser un booleano");
                 }

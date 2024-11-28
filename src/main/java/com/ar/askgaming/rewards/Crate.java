@@ -3,7 +3,9 @@ package com.ar.askgaming.rewards;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ItemDisplay;
@@ -36,7 +38,7 @@ public class Crate implements ConfigurationSerializable {
         } else crateItem = item;
 
         this.name = name;
-        this.displayName = name;
+        this.displayName = name + " Crate";
         this.openCost = 0;
         this.isKeyRequired = false;
         this.openFromInventory = true;
@@ -56,10 +58,21 @@ public class Crate implements ConfigurationSerializable {
         this.isKeyRequired = (boolean) map.get("isKeyRequired");
         this.crateItem = (ItemStack) map.get("crateItem");
         this.openFromInventory = (boolean) map.get("openFromInventory");
-        this.blockLinked = (Block) map.get("blockLinked");
         this.openByBlock = (boolean) map.get("openByBlock");
+
+        if ( map.get("openByBlock") instanceof Location){
+            Location loc = (Location) map.get("blockLinked");
+            this.blockLinked = loc.getBlock();
+            
+        }
         this.keyItem = (ItemStack) map.get("keyItem");
-        this.rewards = (ItemStack[]) map.get("rewards");
+        
+        if (map.get("rewards") instanceof ItemStack[]) {
+            this.rewards = (ItemStack[]) map.get("rewards");
+        } else {
+            this.rewards = new ItemStack[0];
+
+        }
         this.broadcastReward = (boolean) map.get("broadcastReward");
 
         if (blockLinked != null) {
@@ -78,7 +91,12 @@ public class Crate implements ConfigurationSerializable {
         map.put("keyItem", keyItem);
         map.put("rewards", rewards);
         map.put("openFromInventory", openFromInventory);
-        map.put("blockLinked", blockLinked);
+
+        if (blockLinked != null) {
+            map.put("blockLinked", blockLinked.getLocation());
+        } else {
+            map.put("blockLinked", null);
+        }
         map.put("openByBlock", openByBlock);
         map.put("broadcastReward", broadcastReward);
         return map;
@@ -110,11 +128,7 @@ public class Crate implements ConfigurationSerializable {
         return isKeyRequired;
     }
 
-    public ItemStack getCrateItem() {
-        if (plugin.getCrateManager().isCreateKeyItem(crateItem)){
-            return crateItem;
-        }
-        
+    public ItemStack getCrateItem() {       
         return crateItem;
     }
 
@@ -152,6 +166,7 @@ public class Crate implements ConfigurationSerializable {
     public void setOpenCost(double openCost) {
         this.openCost = openCost;
     }
+
     public void setKeyRequired(boolean isKeyRequired) {
         this.isKeyRequired = isKeyRequired;
     }

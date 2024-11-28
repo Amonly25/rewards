@@ -30,14 +30,14 @@ public class CrateManager {
         return gui;
     }
 
-    private NamespacedKey key = new NamespacedKey(plugin, "ask_crate");
+    private NamespacedKey key;
 
     public NamespacedKey getKey() {
         return key;
     }
     public CrateManager(RewardsPlugin plugin) {
         this.plugin = plugin;
-
+        key = new NamespacedKey(plugin, "ask_crate");
         //Create File and load config
         file = new File(plugin.getDataFolder(), "crates.yml");
         if (!file.exists()) {
@@ -61,9 +61,6 @@ public class CrateManager {
 
         //Create inventory and insert crates
         gui = plugin.getServer().createInventory(null, 27, "Crates");
-        for (Crate crate : crates.values()) {
-            addCrateToGui(crate);
-        }
     }
     //#region Create
     public boolean createCrate(String name, ItemStack crate){
@@ -78,8 +75,8 @@ public class CrateManager {
     public void deleteCrate(String name){
         getCrateByName(name);
         config.set(name, null);
-        save();
         crates.remove(name);
+        save();
 
     }
     public void save() {
@@ -102,8 +99,9 @@ public class CrateManager {
     public void setCrates(HashMap<String, Crate> crates) {
         this.crates = crates;
     }
+    //#region AddCrateToGui
     public void addCrateToGui(Crate crate){
-        ItemStack item = crate.getCrateItem();
+        ItemStack item = crate.getCrateItem().clone();
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(crate.getName());
         List<String> lore = new ArrayList<>();
@@ -118,18 +116,37 @@ public class CrateManager {
         lore.add("Key Required: " + crate.isKeyRequired());
         lore.add("Open From Inventory: " + crate.isOpenFromInventory());
         lore.add("Open By Block: " + crate.isOpenByBlock());
-        lore.add("Block Linked: " + crate.getBlockLinked().getX() + ", " + crate.getBlockLinked().getY() + ", " + crate.getBlockLinked().getZ());
-        lore.add("Text Display: " + crate.getTextDisplay().getText());
+
+        if (crate.getBlockLinked() == null){
+            lore.add("Block Linked: None");
+
+        } else {
+            lore.add("Block Linked: " + crate.getBlockLinked().getX() + ", " + crate.getBlockLinked().getY() + ", " + crate.getBlockLinked().getZ());
+        }
+        if (crate.getTextDisplay() == null){
+            lore.add("Text Display: None");
+        } else {
+            lore.add("Text Display: " + crate.getTextDisplay().getText());
+
+        }
+
         lore.add("Rewards Count: " + crate.getRewards().length);
         lore.add("Broadcast Reward: " + crate.isBroadcastReward());
 
         meta.setLore(lore);
+        item.setItemMeta(meta);
         gui.addItem(item);
     }
     //#region HandleOpening
     public void handleOpenByInventory(Player p, Crate crate){
-        int random = (int) (Math.random() * crate.getRewards().length);
-        ItemStack reward = crate.getRewards()[random];
+        ItemStack[] contents = crate.getRewards();
+        if (contents.length == 0){
+            p.sendMessage("This crate has no rewards.");    
+            p.getInventory().addItem(getCrateItem(crate));
+            return;
+        }
+        int random = (int) (Math.random() * contents.length);
+        ItemStack reward = contents[random];
         giveReward(p, reward, crate);
     }
     public void handleOpenByBlock(Player p, Crate crate){
@@ -185,10 +202,13 @@ public class CrateManager {
     public Crate getCrateByName(String name) {
         return crates.get(name);
     }
+    //#region getByBlock
     public Crate getByBlock(Block block) {
         for (Crate crate : crates.values()) {
-            if (crate.getBlockLinked().equals(block)) {
-                return crate;
+            if (crate.getBlockLinked() != null) {
+                if (crate.getBlockLinked().equals(block)) {
+                    return crate;
+                }
             }
         }
         return null;
@@ -212,6 +232,7 @@ public class CrateManager {
     public ItemStack getCrateItem(Crate crate){
         ItemStack item = crate.getCrateItem();
         ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(crate.getDisplayName());
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, crate.getName());
         item.setItemMeta(meta);
         return item;
@@ -225,9 +246,25 @@ public class CrateManager {
     }
     public boolean isCreateKeyItem(ItemStack itemStack) {
         ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null) return false;
         if (meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
             return true;
         }
         return false;
+    }
+    //#region ItemRemove
+    public void removeCrateAndStartOpening(Player p, ItemStack item, Crate crate){
+        if (item.getAmount() > 1){
+            item.setAmount(item.getAmount() - 1);
+        } else {
+            item.setAmount(0);
+        }
+        plugin.getCrateManager().handleOpenByInventory(p, crate);
+    }
+    public void updateGui() {
+        gui.clear();
+        for (Crate crate : crates.values()) {
+            addCrateToGui(crate);
+        }
     }
 }
