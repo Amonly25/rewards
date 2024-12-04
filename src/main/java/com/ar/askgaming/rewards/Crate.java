@@ -27,6 +27,7 @@ public class Crate implements ConfigurationSerializable {
     private ItemStack keyItem;
     private ItemStack[] rewards;
     private TextDisplay textDisplay;
+    private String displayText;
     private ItemDisplay itemDisplay;
     private boolean broadcastReward;
 
@@ -51,6 +52,7 @@ public class Crate implements ConfigurationSerializable {
         this.textDisplay = null;
         this.itemDisplay = null;
         this.broadcastReward = true;
+        this.displayText = "§6" + name + " Crate";
 
     }
     public Crate(Map<String, Object> map) {
@@ -60,6 +62,7 @@ public class Crate implements ConfigurationSerializable {
         this.crateItem = (ItemStack) map.get("crateItem");
         this.openFromInventory = (boolean) map.get("openFromInventory");
         this.openByBlock = (boolean) map.get("openByBlock");
+        this.displayText = (String) map.get("displayText");
 
         if ( map.get("blockLinked") instanceof Location){
             Location loc = (Location) map.get("blockLinked");
@@ -94,6 +97,7 @@ public class Crate implements ConfigurationSerializable {
         map.put("keyItem", keyItem);
         map.put("rewards", rewards);
         map.put("openFromInventory", openFromInventory);
+        map.put("displayText", displayText);
 
         if (blockLinked != null) {
             map.put("blockLinked", blockLinked.getLocation());
@@ -120,9 +124,10 @@ public class Crate implements ConfigurationSerializable {
             return;
 
         }
-        textDisplay = blockLinked.getWorld().spawn(blockLinked.getLocation().add(0.5, 1.2, 0.5), TextDisplay.class);
-        textDisplay.setText(name + " Crate");
+        textDisplay = blockLinked.getWorld().spawn(blockLinked.getLocation().add(0.5, 1, 0.5), TextDisplay.class);
+        textDisplay.setText(ChatColor.translateAlternateColorCodes('&', displayText));
         textDisplay.setBillboard(Billboard.CENTER);
+        textDisplay.setLineWidth(128);
     }
     public String getName() {
         return name;
@@ -208,6 +213,12 @@ public class Crate implements ConfigurationSerializable {
     }
     public void setBroadcastReward(boolean broadcastReward) {
         this.broadcastReward = broadcastReward;
+    }
+    public String getDisplayText() {
+        return displayText;
+    }
+    public void setDisplayText(String displayText) {
+        this.displayText = displayText;
     }
 
 }
