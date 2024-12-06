@@ -69,11 +69,12 @@ public class CrateCommands implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             return List.of("create", "delete", "set", "menu");
-        } else {
-            if (args[0].equalsIgnoreCase("set")) {
-                return setValue;
-            }
-
+        } 
+        if (args.length == 2){
+            return plugin.getCrateManager().getCrates().keySet().stream().toList();
+        }
+        if (args.length == 3) {
+            return setValue;
         }
         return null;
     }
@@ -126,8 +127,17 @@ public class CrateCommands implements TabExecutor {
         }
         if (args.length == 3) {
             handleThreeArgs(p, crate, key);
-        } else if (args.length == 4) {
-            handleFourArgs(p, crate, key, args[3]);
+            return;
+        } 
+        if (args.length == 4) {
+            handleFourArgs(p, crate, key, args);
+            return;
+        } 
+        if (key.equals("textdisplay")) {
+            Bukkit.broadcastMessage("test");
+            setTextDisplay(p, crate, args);
+        } else {
+            p.sendMessage("Usage: crate set <name> <key> <value>");
         }
     }
     private List<String> setValue = List.of("keyrequerid","broadcastReward", "cost", "block", "rewards", "removeblock", "openfrominventory", "openbyblock", "textdisplay", "keyitem","crateitem");
@@ -179,29 +189,29 @@ public class CrateCommands implements TabExecutor {
         }
     }
     //#region handleFourArgs
-    private void handleFourArgs(Player p, Crate crate, String key, String value) {
+    private void handleFourArgs(Player p, Crate crate, String key, String[] args) {
         switch (key) {
             case "cost":
-                setCost(p, crate, value);
+                setCost(p, crate, args[3]);
                 break;
             case "openfrominventory":
-                setBooleanValue(p, crate::setOpenFromInventory, value, "Open from inventory set to ");
+                setBooleanValue(p, crate::setOpenFromInventory, args[3], "Open from inventory set to ");
                 break;
             case "openbyblock":
                 if (crate.getBlockLinked() == null) {
                     p.sendMessage("No hay block linked");
                     return;
                 }
-                setBooleanValue(p, crate::setOpenByBlock, value, "Open by block set to ");
+                setBooleanValue(p, crate::setOpenByBlock, args[3], "Open by block set to ");
                 break;
             case "textdisplay":
-                setTextDisplay(p, crate, value);
+                setTextDisplay(p, crate, args);
                 break;
             case "keyrequerid":
-                setBooleanValue(p, crate::setKeyRequired, value, "Key required set to ");
+                setBooleanValue(p, crate::setKeyRequired, args[3], "Key required set to ");
                 break;
             case "broadcastReward":
-                setBooleanValue(p, crate::setBroadcastReward, value, "Broadcast reward set to ");
+                setBooleanValue(p, crate::setBroadcastReward, args[3], "Broadcast reward set to ");
                 break;
             default:
                 p.sendMessage("Esa key no es valida");
@@ -230,9 +240,11 @@ public class CrateCommands implements TabExecutor {
             p.sendMessage("El valor debe ser un booleano");
         }
     }
-    
-    private void setTextDisplay(Player p, Crate crate, String value) {
+    //#region setTextDisplay
+    private void setTextDisplay(Player p, Crate crate, String[] args) {
+
         TextDisplay text = crate.getTextDisplay();
+        
         if (crate.getBlockLinked() == null) {
             p.sendMessage("No hay block linked");
             return;
@@ -241,7 +253,10 @@ public class CrateCommands implements TabExecutor {
             p.sendMessage("No hay text display");
             return;
         }
+
+        String value = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
         text.setText(ChatColor.translateAlternateColorCodes('&', value));
+        crate.setDisplayText(value);
         plugin.getCrateManager().save();
         p.sendMessage("Text display set to " + value);
     }
