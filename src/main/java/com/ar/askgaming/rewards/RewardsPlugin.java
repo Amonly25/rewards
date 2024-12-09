@@ -1,16 +1,20 @@
 package com.ar.askgaming.rewards;
 
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ar.askgaming.rewards.Commands.CrateCommands;
 import com.ar.askgaming.rewards.Commands.RewardsCommands;
 import com.ar.askgaming.rewards.Listeners.BlockBreakListener;
 import com.ar.askgaming.rewards.Listeners.CloseInventoryListener;
+import com.ar.askgaming.rewards.Listeners.CreatureSpawnListener;
 import com.ar.askgaming.rewards.Listeners.InventoryClickListener;
 import com.ar.askgaming.rewards.Listeners.OpenInventoryListener;
+import com.ar.askgaming.rewards.Listeners.PickUpItemListener;
 import com.ar.askgaming.rewards.Listeners.PlaceBlockListener;
 import com.ar.askgaming.rewards.Listeners.PlayerInteractListener;
+import com.ar.askgaming.rewards.Listeners.PlayerJoinListener;
 
 public class RewardsPlugin extends JavaPlugin {
     
@@ -33,6 +37,9 @@ public class RewardsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlaceBlockListener(this), this);
         getServer().getPluginManager().registerEvents(new OpenInventoryListener(this), this);
         getServer().getPluginManager().registerEvents(new CloseInventoryListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+        getServer().getPluginManager().registerEvents(new CreatureSpawnListener(this), this);
+        getServer().getPluginManager().registerEvents(new PickUpItemListener(this), this);
     }
 
     public void onDisable() {

@@ -1,0 +1,7 @@
+crate_spawn_on_entity:
+  enabled: true
+  modify_health_multiplier: 3
+  crates_chance:
+    rare: 0.1
+    epic: 0.05
+    legendary: 0.01
