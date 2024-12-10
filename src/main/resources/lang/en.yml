@@ -1,0 +1,16 @@
+rewards:
+
+crates:
+  no_longer_exists: "&cThis crate no longer exists."
+  use_crate_to_open: "&cUse a crate to open it."
+  need_key: "&cYou need a key to open this crate."
+  opening: "&eOpening..."
+  got_item: "&aYou got &e{item}&a!"
+  got_nothing: "&cYou got nothing, better luck next time!"
+  broadcast: "&e{player} &aopened a &e{crate}&a! and got &e{item}&a!"
+  no_rewards: "&cNo rewards found for this crate."
+
+misc:
+  inventory_full: "&cYour inventory is full, dropping items on the ground."
+
+commands:

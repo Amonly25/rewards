@@ -4,11 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import com.ar.askgaming.rewards.Crate;
 import com.ar.askgaming.rewards.RewardsPlugin;
@@ -47,14 +45,14 @@ public class InventoryClickListener implements Listener{
             ItemStack gived = plugin.getCrateManager().getCrateItem(crate);
             
             if (p.getInventory().firstEmpty() == -1){
-                p.sendMessage("Your inventory is full.");
+                p.sendMessage("§cYour inventory is full.");
                 return;
             }
             if (crate.isKeyRequired()){
                 p.getInventory().addItem(plugin.getCrateManager().getKeyItem(crate));
             }
             if (p.getInventory().firstEmpty() == -1){
-                p.sendMessage("Your inventory is full.");
+                p.sendMessage("§cYour inventory is full.");
                 return;
             }
             p.getInventory().addItem(gived);

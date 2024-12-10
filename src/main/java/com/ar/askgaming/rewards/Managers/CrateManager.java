@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards;
+package com.ar.askgaming.rewards.Managers;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,6 +24,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.ar.askgaming.rewards.Crate;
+import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class CrateManager {
 
@@ -125,8 +128,9 @@ public class CrateManager {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             meta = plugin.getServer().getItemFactory().getItemMeta(item.getType());
+            meta.setDisplayName(crate.getName());
+            item.setItemMeta(meta);
         }
-        meta.setDisplayName(crate.getName());
         List<String> lore = new ArrayList<>();
         if (crate.getCrateItem().getItemMeta().hasLore()){
             for (String line : crate.getCrateItem().getItemMeta().getLore()) {
@@ -173,7 +177,7 @@ public class CrateManager {
         Block b = crate.getBlockLinked();
         ItemDisplay itemDisplay = b.getWorld().spawn(b.getLocation().add(0.5, 2, 0.5), ItemDisplay.class);
         itemDisplay.setItemStack(key);
-        itemDisplay.setCustomName("Opening..");
+        itemDisplay.setCustomName(plugin.getLangManager().getFrom("crates.opening", p));
         itemDisplay.setCustomNameVisible(true);
         itemDisplay.setItemDisplayTransform(ItemDisplayTransform.GROUND);
         itemDisplay.setBillboard(Billboard.CENTER);
@@ -203,7 +207,7 @@ public class CrateManager {
     }
     private void giveReward(Player p, ItemStack reward, Crate crate){
         if (reward == null || reward.getType() == Material.AIR){
-            p.sendMessage("You got nothing, better luck next time.");
+            p.sendMessage(plugin.getLangManager().getFrom("crates.got_nothing", p));
             return;
         }
         String name = reward.getType().name().replace("_", " ");
@@ -211,15 +215,21 @@ public class CrateManager {
             name = reward.getItemMeta().getDisplayName();
         }
         if (crate.isBroadcastReward()){
-            plugin.getServer().broadcastMessage(p.getName() + " got " + name + " from " + crate.getCrateItem().getItemMeta().getDisplayName());
+
+            String crateName = crate.getCrateItem().getItemMeta().getDisplayName();
+
+            for (Player player : plugin.getServer().getOnlinePlayers()) {
+                player.sendMessage(plugin.getLangManager().getFrom("crates.broadcast", p).replace("{player}", p.getName()).replace(
+                    "{item}", name).replace("{crate}", crateName));
+            }
         }
         int space = p.getInventory().firstEmpty();
         if (space == -1){
             p.getWorld().dropItem(p.getLocation(), reward);
-            p.sendMessage("Your inventory is full, item dropped on the ground.");
+            p.sendMessage(plugin.getLangManager().getFrom("misc.inventory_full", p));
         } else {
             p.getInventory().addItem(reward);
-            p.sendMessage("You got " + name + ", congratulations!");
+            p.sendMessage(plugin.getLangManager().getFrom("crates.got_item", p).replace("{item}", name));
         }
     }
     public Crate getCrateByName(String name) {
@@ -278,7 +288,7 @@ public class CrateManager {
     public boolean removeCrateKeyBeforetOpening(Player p, ItemStack item, ItemStack key, Crate crate){
 
         if (!hasRewards(crate)){
-            p.sendMessage("This crate has no rewards.");
+            p.sendMessage(plugin.getLangManager().getFrom("crates.no_rewards", p));
             return false;
         }
 

@@ -60,19 +60,19 @@ public class PlayerInteractListener implements Listener{
         //Check inventory from crate gui
         Crate crate = plugin.getCrateManager().getCrateByName(type);
         if (crate == null){
-           p.sendMessage("This item is not longer a crate item.");
+           p.sendMessage(plugin.getLangManager().getFrom("crates.no_longer_exists", p));
             return;
         }
         
         ItemStack similar = crate.getKeyItem();
         if (similar == null || similar.getType() == Material.AIR){
-            p.sendMessage("Crate key is not set correctly, setting default key item.");
+            p.sendMessage("§cCrate key is not set correctly, setting default key item.");
             similar = crate.setDefaultKey();
             plugin.getCrateManager().save();
             return;
         }
         if (similar.getType()== item.getType()){
-            p.sendMessage("You must use the crate to open it.");
+            p.sendMessage(plugin.getLangManager().getFrom("crates.use_crate_to_open", p));
             return;
         }
         ItemStack key = null;
@@ -85,7 +85,7 @@ public class PlayerInteractListener implements Listener{
         }
 
         if (crate.isKeyRequired() && key == null){ 
-            p.sendMessage("You need a key to open this crate.");
+            p.sendMessage(plugin.getLangManager().getFrom("crates.need_key", p));
             return;
         }
         if (item.equals(key)){
@@ -113,7 +113,7 @@ public class PlayerInteractListener implements Listener{
                 }
             }
             if (key == null){
-                p.sendMessage("Cant open this crate, you need a key.");
+                p.sendMessage(plugin.getLangManager().getFrom("crates.need_key", p));
                 return;
             }
 

@@ -53,7 +53,7 @@ public class CreatureSpawnListener implements Listener{
                             break;
                         }
                     } else {
-                        plugin.getLogger().warning("Crate " + key + " not found!");
+                        plugin.getLogger().warning("§cCrate " + key + " not found!");
                     }
                 }
             }

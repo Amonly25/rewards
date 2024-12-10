@@ -20,7 +20,7 @@ public class PlayerJoinListener implements Listener{
         
         Player p = e.getPlayer();
         if (!p.hasPlayedBefore()){
-            Bukkit.broadcastMessage("First join!");
+            //Bukkit.broadcastMessage("First join!");
         }
     }
     

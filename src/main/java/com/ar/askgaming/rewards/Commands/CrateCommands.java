@@ -21,7 +21,6 @@ import com.ar.askgaming.rewards.Crate;
 import com.ar.askgaming.rewards.RewardsPlugin;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class CrateCommands implements TabExecutor {
 
@@ -33,7 +32,7 @@ public class CrateCommands implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
         if (args.length == 0) {
-            sender.sendMessage("Usage: /crate <create/delete/set/menu>");
+            sender.sendMessage("§cUsage: /crate <create/delete/set/menu>");
             return true;
         }
 
@@ -56,9 +55,8 @@ public class CrateCommands implements TabExecutor {
             case "menu":
                 p.openInventory(plugin.getCrateManager().getGui());
                 break;
-
             default:
-                p.sendMessage("Usage: /crate <create/delete/set/menu>");
+                p.sendMessage("§cUsage: /crate <create/delete/set/menu>");
                 break;
         }
         
@@ -81,48 +79,48 @@ public class CrateCommands implements TabExecutor {
     //#region create
     public void createCommand(Player p, String[] args){
         if (args.length != 2) {
-            p.sendMessage("Usage: crate create <name>");
+            p.sendMessage("§cUsage: crate create <name>");
             return;
         }
         String name = args[1].toLowerCase();
         if (plugin.getCrateManager().getCrates().containsKey(name)){
-            p.sendMessage("Esa caja con ese nombre ya existe");
+            p.sendMessage("§cThis crate already exists.");
             return;
         }
-        p.sendMessage("Has creado la caja "+name);
+        p.sendMessage("§aCrate " + name + " created.");
         plugin.getCrateManager().createCrate(name, null);
 
     }
     //#region delete
     public void deleteCommand(Player p, String[] args){
         if (args.length != 2) {
-            p.sendMessage("Usage: crate delete <name>");
+            p.sendMessage("§cUsage: crate delete <name>");
             return;
         }
         String name = args[1].toLowerCase();
         if (!plugin.getCrateManager().getCrates().containsKey(name)){
-            p.sendMessage("Esa caja no existe");
+            p.sendMessage("§cThis crate doesnt exists.");
             return;
         }
         plugin.getCrateManager().deleteCrate(name);
-        p.sendMessage("Has eliminado la caja "+name);
+        p.sendMessage("§aCrate " + name + " deleted.");
     }
     //#region set
     public void setCommand(Player p, String[] args){
         if (args.length < 2) {
-            p.sendMessage("Usage: crate set <name> <key> <value>");
+            p.sendMessage("§cUsage: crate set <name> <key> <value>");
             return;
         }
         String name = args[1].toLowerCase();
         Crate crate = plugin.getCrateManager().getCrates().get(name);
         if (crate == null){
-            p.sendMessage("Esa caja no existe");
+            p.sendMessage("§cThis crate doesnt exists.");
             return;
         }
 
         String key = args[2];
         if (!setValue.contains(key)){
-            p.sendMessage("Esa key no es valida");
+            p.sendMessage("§cThis key is not valid.");
             return;
         }
         if (args.length == 3) {
@@ -134,10 +132,9 @@ public class CrateCommands implements TabExecutor {
             return;
         } 
         if (key.equals("textdisplay")) {
-            Bukkit.broadcastMessage("test");
             setTextDisplay(p, crate, args);
         } else {
-            p.sendMessage("Usage: crate set <name> <key> <value>");
+            p.sendMessage("§cUsage: crate set <name> <key> <value>");
         }
     }
     private List<String> setValue = List.of("keyrequerid","broadcastReward", "cost", "block", "rewards", "removeblock", "openfrominventory", "openbyblock", "textdisplay", "keyitem","crateitem");
@@ -147,11 +144,11 @@ public class CrateCommands implements TabExecutor {
         switch (key) {
             case "rewards":
                 if (plugin.getCrateManager().getEditing().containsKey(crate)) {
-                    p.sendMessage(crate.getName() + " ya esta siendo editada");
+                    p.sendMessage(crate.getName() + " is already being edited.");
                     return;
                 }
                 ItemStack[] rewards = crate.getRewards();
-                Inventory inv = Bukkit.createInventory(null, 27, "Updated rewards, close to save.");
+                Inventory inv = Bukkit.createInventory(null, 27, "§6Updated rewards, close to save.");
                 inv.setContents(rewards);
                 plugin.getCrateManager().getEditing().put(crate, inv);
                 p.openInventory(inv);
@@ -165,7 +162,7 @@ public class CrateCommands implements TabExecutor {
                 crate.setBlockLinked(targetBlock);
                 crate.setOpenByBlock(true);
                 crate.setKeyRequired(true);
-                p.sendMessage("Block linked set to " + targetBlock.getType());
+                p.sendMessage("§aBlock linked set to " + targetBlock.getType());
                 plugin.getCrateManager().save();
                 break;    
             case "removeblock":
@@ -173,18 +170,18 @@ public class CrateCommands implements TabExecutor {
                 if (textDisplay != null) {
                     textDisplay.remove();
                 }
-                p.sendMessage("Block linked removed");
+                p.sendMessage("§aBlock linked removed");
                 plugin.getCrateManager().save();
                 crate.setBlockLinked(null);
                 break;
             case "keyitem":
-                setItemInHand(p, crate::setKeyItem, "Key item set to ");
+                setItemInHand(p, crate::setKeyItem, "§6Key item set to ");
                 break;
             case "crateitem":
-                setItemInHand(p, crate::setCrateItem, "Crate item set to ");
+                setItemInHand(p, crate::setCrateItem, "§6Crate item set to ");
                 break;
             default:
-                p.sendMessage("Esa key no es valida");
+                p.sendMessage("§cThis key is not valid.");
                 break;
         }
     }
@@ -195,26 +192,26 @@ public class CrateCommands implements TabExecutor {
                 setCost(p, crate, args[3]);
                 break;
             case "openfrominventory":
-                setBooleanValue(p, crate::setOpenFromInventory, args[3], "Open from inventory set to ");
+                setBooleanValue(p, crate::setOpenFromInventory, args[3], "§6Open from inventory set to ");
                 break;
             case "openbyblock":
                 if (crate.getBlockLinked() == null) {
-                    p.sendMessage("No hay block linked");
+                    p.sendMessage("§cNo block linked");
                     return;
                 }
-                setBooleanValue(p, crate::setOpenByBlock, args[3], "Open by block set to ");
+                setBooleanValue(p, crate::setOpenByBlock, args[3], "§6Open by block set to ");
                 break;
             case "textdisplay":
                 setTextDisplay(p, crate, args);
                 break;
             case "keyrequerid":
-                setBooleanValue(p, crate::setKeyRequired, args[3], "Key required set to ");
+                setBooleanValue(p, crate::setKeyRequired, args[3], "§6Key required set to ");
                 break;
             case "broadcastReward":
-                setBooleanValue(p, crate::setBroadcastReward, args[3], "Broadcast reward set to ");
+                setBooleanValue(p, crate::setBroadcastReward, args[3], "§6Broadcast reward set to ");
                 break;
             default:
-                p.sendMessage("Esa key no es valida");
+                p.sendMessage("§cThis key is not valid.");
                 break;
         }
     }
@@ -223,10 +220,10 @@ public class CrateCommands implements TabExecutor {
         try {
             double cost = Double.parseDouble(value);
             crate.setOpenCost(cost);
-            p.sendMessage("Cost set to " + cost);
+            p.sendMessage("§6Cost set to " + cost);
             plugin.getCrateManager().save();
         } catch (NumberFormatException e) {
-            p.sendMessage("El valor debe ser un numero");
+            p.sendMessage("§cThe value must be a number.");
         }
     }
     
@@ -237,7 +234,7 @@ public class CrateCommands implements TabExecutor {
             p.sendMessage(message + boolValue);
             plugin.getCrateManager().save();
         } catch (Exception e) {
-            p.sendMessage("El valor debe ser un booleano");
+            p.sendMessage("§cThe value must be a boolean.");
         }
     }
     //#region setTextDisplay
@@ -246,11 +243,11 @@ public class CrateCommands implements TabExecutor {
         TextDisplay text = crate.getTextDisplay();
         
         if (crate.getBlockLinked() == null) {
-            p.sendMessage("No hay block linked");
+            p.sendMessage("§cNo block linked");
             return;
         }
         if (text == null) {
-            p.sendMessage("No hay text display");
+            p.sendMessage("§cNo text display set");
             return;
         }
 
@@ -258,13 +255,13 @@ public class CrateCommands implements TabExecutor {
         text.setText(ChatColor.translateAlternateColorCodes('&', value));
         crate.setDisplayText(value);
         plugin.getCrateManager().save();
-        p.sendMessage("Text display set to " + value);
+        p.sendMessage("§6Text display set to " + value);
     }
     
     private void setItemInHand(Player p, Consumer<ItemStack> setter, String message) {
         ItemStack item = p.getInventory().getItemInMainHand();
         if (item == null || item.getType().isAir()) {
-            p.sendMessage("No hay item en la mano");
+            p.sendMessage("§cYou must be holding an item.");
             return;
         }
         setter.accept(item);

@@ -1,7 +1,6 @@
 package com.ar.askgaming.rewards;
 
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ar.askgaming.rewards.Commands.CrateCommands;
@@ -15,10 +14,13 @@ import com.ar.askgaming.rewards.Listeners.PickUpItemListener;
 import com.ar.askgaming.rewards.Listeners.PlaceBlockListener;
 import com.ar.askgaming.rewards.Listeners.PlayerInteractListener;
 import com.ar.askgaming.rewards.Listeners.PlayerJoinListener;
+import com.ar.askgaming.rewards.Managers.CrateManager;
+import com.ar.askgaming.rewards.Managers.LangManager;
 
 public class RewardsPlugin extends JavaPlugin {
     
-    CrateManager crateManager;
+    private CrateManager crateManager;
+    private LangManager langManager;
 
     public void onEnable() {
 
@@ -27,6 +29,7 @@ public class RewardsPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(Crate.class,"Crate");
 
         crateManager = new CrateManager(this);
+        langManager = new LangManager(this);
 
         getServer().getPluginCommand("rewards").setExecutor(new RewardsCommands());
         getServer().getPluginCommand("crate").setExecutor(new CrateCommands(this));
@@ -59,6 +62,9 @@ public class RewardsPlugin extends JavaPlugin {
     }
     public CrateManager getCrateManager() {
         return crateManager;
+    }
+    public LangManager getLangManager() {
+        return langManager;
     }
 
 }

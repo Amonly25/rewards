@@ -17,11 +17,11 @@ public class PlaceBlockListener implements Listener{
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e){
         ItemStack item = e.getItemInHand();
-        Player p = e.getPlayer();
+        //Player p = e.getPlayer();
         if (plugin.getCrateManager().isCreateKeyItem(item)){
             e.setCancelled(true);
-            p.sendMessage("You can't place this block");
-            //Add admin message
+            //p.sendMessage("§cYou can't place this block");
+            //Add admin message?
         }
     }
 

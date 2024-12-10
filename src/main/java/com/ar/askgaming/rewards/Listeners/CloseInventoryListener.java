@@ -32,7 +32,7 @@ public class CloseInventoryListener implements Listener{
                 crate.setRewards(rewards);
                 plugin.getCrateManager().save();
                 iterator.remove();
-                p.sendMessage("Crate saved!");
+                p.sendMessage("§aCrate rewards saved!");
             }
         }
     }
