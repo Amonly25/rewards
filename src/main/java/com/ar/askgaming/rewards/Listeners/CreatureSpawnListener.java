@@ -41,7 +41,7 @@ public class CreatureSpawnListener implements Listener{
                         double random = Math.random() * 100;
                         
                         if (random <= chance) {
-                            Bukkit.broadcastMessage(key + " " + chance + " " + random + entity.getLocation());
+                           // Bukkit.broadcastMessage(key + " " + chance + " " + random + entity.getLocation());
                             ItemStack item = plugin.getCrateManager().getCrateItem(crate);
                             Entity drop = entity.getLocation().getWorld().dropItemNaturally(entity.getLocation(), item);
                             entity.addPassenger(drop);
