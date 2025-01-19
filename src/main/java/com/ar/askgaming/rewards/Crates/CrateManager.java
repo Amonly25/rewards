@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Managers;
+package com.ar.askgaming.rewards.Crates;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.ar.askgaming.rewards.Crate;
 import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class CrateManager {
@@ -126,11 +125,9 @@ public class CrateManager {
     public void addCrateToGui(Crate crate){
         ItemStack item = crate.getCrateItem().clone();
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            meta = plugin.getServer().getItemFactory().getItemMeta(item.getType());
-            meta.setDisplayName(crate.getName());
-            item.setItemMeta(meta);
-        }
+        meta.setDisplayName(crate.getName());
+        item.setItemMeta(meta);
+        
         List<String> lore = new ArrayList<>();
         if (crate.getCrateItem().getItemMeta().hasLore()){
             for (String line : crate.getCrateItem().getItemMeta().getLore()) {

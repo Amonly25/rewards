@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards;
+package com.ar.askgaming.rewards.Crates;
 
 import java.util.HashMap;
 import java.util.List;

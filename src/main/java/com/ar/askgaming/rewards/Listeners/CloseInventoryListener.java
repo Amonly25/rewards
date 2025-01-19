@@ -10,8 +10,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.ar.askgaming.rewards.Crate;
 import com.ar.askgaming.rewards.RewardsPlugin;
+import com.ar.askgaming.rewards.Crates.Crate;
 
 public class CloseInventoryListener implements Listener{
 

@@ -5,11 +5,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.ar.askgaming.rewards.Crate;
 import com.ar.askgaming.rewards.RewardsPlugin;
+import com.ar.askgaming.rewards.Crates.Crate;
 
 public class InventoryClickListener implements Listener{
 
@@ -17,8 +18,43 @@ public class InventoryClickListener implements Listener{
     public InventoryClickListener(RewardsPlugin plugin){
         this.plugin = plugin;
     }
+
+    
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent e){
+    public void onRewardsGuid(InventoryClickEvent e){
+       
+        if (!(e.getWhoClicked() instanceof Player)) return;
+
+        Player p = (Player) e.getWhoClicked();
+        Inventory actual = e.getInventory();
+        for (Inventory check : plugin.getRewardsGui().getPlayerInvs().values()){
+            if (check.equals(actual)){
+                e.setCancelled(true);
+
+                ItemStack item = e.getCurrentItem();
+                if (item == null || item.getType().equals(Material.AIR)) {
+                    break;
+                }
+                ItemMeta meta = item.getItemMeta();
+                if (meta == null) return;
+                String name = meta.getDisplayName();
+                if (name == null) return;
+
+                String daily = plugin.getConfig().getString("rewards.daily.name","Daily Reward").replace("&", "§");
+
+                if (name.equals(daily)) {
+                    if (plugin.getDailyReward().canClaimDailyReward(p)){
+                        plugin.getDailyReward().giveDailyReward(p);
+                    } else {
+                        p.sendMessage(plugin.getLangManager().getFrom("rewards.cant_claim_yet", p));
+
+                    }
+                } 
+            }
+        }
+    }
+    @EventHandler
+    public void onCrateInventory(InventoryClickEvent e){
        
         if (!(e.getWhoClicked() instanceof Player)) return;
 

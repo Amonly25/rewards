@@ -22,6 +22,16 @@ public class PlayerJoinListener implements Listener{
         if (!p.hasPlayedBefore()){
             //Bukkit.broadcastMessage("First join!");
         }
+
+        plugin.getDataManager().loadOrCreatePlayerData(p);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            if (plugin.getDailyReward().canClaimDailyReward(p)){
+                p.sendMessage(plugin.getLangManager().getFrom("rewards.daily_can_claim", p));
+            }
+            plugin.getStreakConnection().process(p);
+        }, 100);
+
     }
     
 }

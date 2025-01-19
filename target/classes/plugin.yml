@@ -9,5 +9,6 @@ commands:
     usage: /rewards
   crate:
     description: Opens a crate
+    permission: rewards.crate.admin
     usage: /crate
 

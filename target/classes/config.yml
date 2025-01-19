@@ -5,3 +5,52 @@ crate_spawn_on_entity:
     rare: 0.1
     epic: 0.05
     legendary: 0.01
+
+gui:
+  size: 27
+  title: "&eRewards"
+
+rewards:
+  daily:
+    enabled: true
+    name: "Daily Rewards"
+    material: "CHEST_MINECART"
+    slot: 0
+    blacklist:
+    - "COMMAND_BLOCK"
+    - "BARRIER"
+    - "LIGHT"
+    - "AIR"
+    - "BEDROCK"
+    - "CHAIN_COMMAND_BLOCK"
+    - "REPEATING_COMMAND_BLOCK"
+    - "COMMAND_BLOCK_MINECART"
+    - "STRUCTURE_BLOCK"
+    - "STRUCTURE_VOID"
+    - "JIGSAW"
+    - "SPAWNER"
+  streak:
+    enabled: true
+    name: "Streak Connection"
+    material: "GOLD_INGOT"
+    slot: 3
+
+
+streak_connection:
+  rewards:
+    1:
+      message: ""
+      commands:
+      - eco add %player% %streak% # this will give the player the amount of money equal to their streak
+    # 14:
+    #   message: "&7"
+    #   commands: 
+    #   - eco give %player% 1400
+    # 21:
+    #   message: "&7"
+    #   commands:
+    #   - eco give %player% 2100
+    # 28:
+    #   message: "&7"
+    #   commands:
+    #   - eco give %player% 2800    

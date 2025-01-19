@@ -17,8 +17,8 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.ar.askgaming.rewards.Crate;
 import com.ar.askgaming.rewards.RewardsPlugin;
+import com.ar.askgaming.rewards.Crates.Crate;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -107,7 +107,7 @@ public class CrateCommands implements TabExecutor {
     }
     //#region set
     public void setCommand(Player p, String[] args){
-        if (args.length < 2) {
+        if (args.length < 4) {
             p.sendMessage("§cUsage: crate set <name> <key> <value>");
             return;
         }
