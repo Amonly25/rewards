@@ -38,7 +38,8 @@ public class PlayerInteractListener implements Listener{
         if (e.getClickedBlock() != null && e.getAction() == Action.RIGHT_CLICK_BLOCK){
             openCrateByInteractToBlock(e);
         } 
-        if (e.getItem() != null){
+        if (Action.RIGHT_CLICK_AIR == e.getAction() || Action.RIGHT_CLICK_BLOCK == e.getAction()){
+            if (e.getItem() == null || e.getItem().getType() == Material.AIR) return;
             openCrateByInteractToItem(e);
         }
     }
