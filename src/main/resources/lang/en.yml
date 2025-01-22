@@ -1,10 +1,12 @@
-rewards:
-  daily_can_claim: "&eYou can claim your daily reward now!"
+daily:
   cant_claim_yet: "&cYou can't claim your daily reward yet."
-  time_left: "&cYou can't claim your daily reward yet! Time remaining: {hours}h {minutes}m {seconds}s"
-  daily_broadcast: "&a{player} &7has received a &e{item} &7as a daily reward!"
-  current_streak: "&7Current Streak Connections: &e{streak}"
-  streak_connections: "&7You have a streak connection of &e{streak}!"
+  time_left: "&c{hours}h {minutes}m {seconds}s"
+  now: "&eNow!"
+  can_claim: "&eYou can claim your daily reward now!"
+  broadcast: "&a{player} &7has received a &e{item} &7as a daily reward!"
+
+streack_connection:
+  on_join: "&7You have a streak connection of &e{streak}!"  
 
 crates:
   no_longer_exists: "&cThis crate no longer exists."
@@ -15,6 +17,11 @@ crates:
   got_nothing: "&cYou got nothing, better luck next time!"
   broadcast: "&a{player} &7opened a &e{crate}&a! &7and got &e{item}&a!"
   no_rewards: "&cNo rewards found for this crate."
+
+vote:
+- "&7Vote for the server"
+- "&7You can vote every 24 hours"
+- "&aLink: "
 
 misc:
   inventory_full: "&cYour inventory is full, dropping items on the ground."

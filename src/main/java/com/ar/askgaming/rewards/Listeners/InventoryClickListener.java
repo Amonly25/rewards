@@ -40,13 +40,13 @@ public class InventoryClickListener implements Listener{
                 String name = meta.getDisplayName();
                 if (name == null) return;
 
-                String daily = plugin.getConfig().getString("rewards.daily.name","Daily Reward").replace("&", "§");
+                String daily = plugin.getConfig().getString("gui.daily.name","Daily Reward").replace("&", "§");
 
                 if (name.equals(daily)) {
                     if (plugin.getDailyReward().canClaimDailyReward(p)){
                         plugin.getDailyReward().giveDailyReward(p);
                     } else {
-                        p.sendMessage(plugin.getLangManager().getFrom("rewards.cant_claim_yet", p));
+                        p.sendMessage(plugin.getLangManager().getFrom("daily.cant_claim_yet", p));
 
                     }
                 } 

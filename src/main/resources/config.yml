@@ -1,48 +1,78 @@
+# This will add a crate to the head of the mob, and will be dropped when the mob is killed
+# Only works for mobs that spawn naturally in the world
 crate_spawn_on_entity:
   enabled: true
   modify_health_multiplier: 3
+  # Premade crates
   crates_chance:
-    rare: 0.1
-    epic: 0.05
-    legendary: 0.01
+    rare: 0.1 # 1%
+    epic: 0.05 # 0.5%
+    legendary: 0.01 # 0.1%
 
+# Gui config
 gui:
   size: 27
   title: "&eRewards"
-
-rewards:
   daily:
     enabled: true
     name: "Daily Rewards"
+    lore:
+    - "&7You will receive a random item"
+    - "&7You can claim in: %daily%"
     material: "CHEST_MINECART"
     slot: 0
-    blacklist:
-    - "COMMAND_BLOCK"
-    - "BARRIER"
-    - "LIGHT"
-    - "AIR"
-    - "BEDROCK"
-    - "CHAIN_COMMAND_BLOCK"
-    - "REPEATING_COMMAND_BLOCK"
-    - "COMMAND_BLOCK_MINECART"
-    - "STRUCTURE_BLOCK"
-    - "STRUCTURE_VOID"
-    - "JIGSAW"
-    - "SPAWNER"
   streak:
     enabled: true
     name: "Streak Connection"
+    lore:
+    - "&7You will receive a reward for each connection"
+    - "&7Current streak: %streak%"
     material: "GOLD_INGOT"
-    slot: 3
+    slot: 2
+  vote:
+    enabled: true
+    name: "Vote Rewards"
+    lore:
+    - "&7You have &c%vote%&7 votes"
+    - "&7Use /vote to how to vote"
+    material: "NETHERITE_UPGRADE_SMITHING_TEMPLATE"
+    slot: 4
+  playtime:
+    enabled: true
+    name: "Playtime Rewards"
+    lore:
+    - "&7You have played for &c%playtime%"
+    - "&7You will receive a reward for each hour"
+    material: "CLOCK"
+    slot: 6
 
+# Daily rewards
+# This will give the player a reward for logging in daily
+# Where a random item will be given to the player
+daily:
+  blacklist:
+  - "COMMAND_BLOCK"
+  - "BARRIER"
+  - "LIGHT"
+  - "AIR"
+  - "BEDROCK"
+  - "CHAIN_COMMAND_BLOCK"
+  - "REPEATING_COMMAND_BLOCK"
+  - "COMMAND_BLOCK_MINECART"
+  - "STRUCTURE_BLOCK"
+  - "STRUCTURE_VOID"
+  - "JIGSAW"
+  - "SPAWNER"
 
+# Reward player for streak connection to the server
 streak_connection:
   rewards:
-    1:
+    1: #This number is the amount of streaks connections - 1 means that this will apply allways
       message: ""
       commands:
       - eco add %player% %streak% # this will give the player the amount of money equal to their streak
-    # 14:
+      # So with this example, the player will receive 1 money for each streak connection each time they connect to the server
+    # 14: #So this will apply when the player has 14 streak connections or more
     #   message: "&7"
     #   commands: 
     #   - eco give %player% 1400
@@ -54,3 +84,49 @@ streak_connection:
     #   message: "&7"
     #   commands:
     #   - eco give %player% 2800    
+
+# Vote rewards
+vote:
+  rewards:
+    1: #Example
+      chance: 100 # 100%
+      message: "Thanks for voting! You will receive: " #this message will be sended to the player
+      broadcast: ""
+      commands:
+      - eco give %player% 5
+    2: #Support multiple rewards - This number is not the the amount of votes!
+      chance: 10 # 10%
+      message: ""
+      broadcast: "Luck is on %player%'s side! They received a bonus reward!"
+      commands:
+      - eco give %player% 100
+    3:
+      chance: 1 # 0%
+      message: ""
+      broadcast: "Omg! %player% is so lucky! They received a bonus reward of voting!"
+      commands:
+      - eco give %player% 500
+
+# This is a weekly check
+# We just read the playtime of the player on the server
+# So we dont modify those values and the time never resets
+# Just reward the most active players
+playtime:
+  check_on: SUNDAY
+  at: 20 #hs
+  rewards:
+    1: #player top 1
+      message: "" #this message will be sended to the player
+      broadcast: "%player% is the most active player on the server! They received a bonus reward!"
+      commands:
+      - eco give %player% 5
+    2: #top 2
+      message: ""
+      broadcast: ""
+      commands:
+      - eco give %player% 10
+    3: #top 3
+      message: ""
+      broadcast: ""
+      commands:
+      - eco give %player% 15

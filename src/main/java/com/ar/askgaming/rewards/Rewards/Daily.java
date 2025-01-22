@@ -12,15 +12,15 @@ import org.bukkit.inventory.ItemStack;
 import com.ar.askgaming.rewards.RewardsPlugin;
 import com.ar.askgaming.rewards.Managers.PlayerData;
 
-public class DailyReward {
+public class Daily {
 
     private RewardsPlugin plugin;
-    public DailyReward(RewardsPlugin plugin){
+    public Daily(RewardsPlugin plugin){
         this.plugin = plugin;
     }
         //#region Daily Rewards
     public void giveDailyReward(Player p){
-        List<String> blacklist = plugin.getConfig().getStringList("rewards.daily.blacklist");
+        List<String> blacklist = plugin.getConfig().getStringList("daily.blacklist");
         if (blacklist.isEmpty()){
         blacklist.add("COMMAND_BLOCK");
         blacklist.add("BARRIER");
@@ -49,7 +49,7 @@ public class DailyReward {
         for (Player player : Bukkit.getOnlinePlayers()) {
 
             String itemName = reward.getType().name().toLowerCase().replace("_", " ");
-            player.sendMessage(plugin.getLangManager().getFrom("rewards.daily_broadcast", p).replace("{player}", p.getName()).replace("{item}", itemName));
+            player.sendMessage(plugin.getLangManager().getFrom("daily.broadcast", p).replace("{player}", p.getName()).replace("{item}", itemName));
         }
 
         PlayerData data = plugin.getDataManager().getPlayerData(p);
@@ -90,9 +90,9 @@ public class DailyReward {
             long hours = remaining / 3600000;
             long minutes = (remaining % 3600000) / 60000;
             long seconds = (remaining % 60000) / 1000;
-            String left = plugin.getLangManager().getFrom("rewards.time_left", p).replace("{hours}", String.valueOf(hours)).replace("{minutes}", String.valueOf(minutes)).replace("{seconds}", String.valueOf(seconds));
+            String left = plugin.getLangManager().getFrom("daily.time_left", p).replace("{hours}", String.valueOf(hours)).replace("{minutes}", String.valueOf(minutes)).replace("{seconds}", String.valueOf(seconds));
             return left;
         }
-        return plugin.getLangManager().getFrom("rewards.daily_can_claim", p);
+        return plugin.getLangManager().getFrom("daily.now", p);
     }
 }

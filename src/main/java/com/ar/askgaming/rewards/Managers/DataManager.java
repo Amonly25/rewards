@@ -1,7 +1,9 @@
 package com.ar.askgaming.rewards.Managers;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -55,5 +57,24 @@ public class DataManager {
 
         return pd;
 
+    }
+    public HashMap<String,Integer> getAllData(){
+        HashMap<String,Integer> top = new HashMap<>();
+        
+        File folder = new File(plugin.getDataFolder(), "/playerdata");
+        File[] files = folder.listFiles();
+        for (File file : files) {
+            FileConfiguration cfg = new YamlConfiguration();
+            try {
+                cfg.load(file);
+                String uuid = file.getName().replace(".yml", "");
+                PlayerData pd = (PlayerData) cfg.get(uuid);
+                top.put(uuid, pd.getPlaytime());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return top;
     }
 }

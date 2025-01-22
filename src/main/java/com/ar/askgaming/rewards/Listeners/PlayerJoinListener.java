@@ -24,12 +24,18 @@ public class PlayerJoinListener implements Listener{
         }
 
         plugin.getDataManager().loadOrCreatePlayerData(p);
+        plugin.getPlaytimeManager().update(p);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if (plugin.getDailyReward().canClaimDailyReward(p)){
-                p.sendMessage(plugin.getLangManager().getFrom("rewards.daily_can_claim", p));
+                p.sendMessage(plugin.getLangManager().getFrom("daily.can_claim", p));
             }
             plugin.getStreakConnection().process(p);
+            
+            if (plugin.getServer().getPluginManager().getPlugin("VotifierPlus") != null) {
+                plugin.getVoteReward().checkOnJoin(p);
+            }
+
         }, 100);
 
     }

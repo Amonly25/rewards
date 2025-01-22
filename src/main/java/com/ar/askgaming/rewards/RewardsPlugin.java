@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ar.askgaming.rewards.Commands.CrateCommands;
 import com.ar.askgaming.rewards.Commands.RewardsCommands;
+import com.ar.askgaming.rewards.Commands.VoteCommand;
 import com.ar.askgaming.rewards.Crates.Crate;
 import com.ar.askgaming.rewards.Crates.CrateManager;
 import com.ar.askgaming.rewards.Listeners.BlockBreakListener;
@@ -20,18 +21,21 @@ import com.ar.askgaming.rewards.Listeners.PlayerJoinListener;
 import com.ar.askgaming.rewards.Managers.DataManager;
 import com.ar.askgaming.rewards.Managers.LangManager;
 import com.ar.askgaming.rewards.Managers.PlayerData;
-import com.ar.askgaming.rewards.Rewards.DailyReward;
-import com.ar.askgaming.rewards.Rewards.RewardsGui;
+import com.ar.askgaming.rewards.Rewards.Daily;
+import com.ar.askgaming.rewards.Rewards.Playtime;
 import com.ar.askgaming.rewards.Rewards.StreakConnection;
+import com.ar.askgaming.rewards.Rewards.Vote;
 
 public class RewardsPlugin extends JavaPlugin {
     
     private CrateManager crateManager;
     private LangManager langManager;
     private DataManager dataManager;
-    private DailyReward dailyReward;
+    private Daily dailyReward;
     private StreakConnection streakConnection;
     private RewardsGui rewardsGui;
+    private Vote vote;
+    private Playtime playtime;
 
     public void onEnable() {
 
@@ -44,11 +48,13 @@ public class RewardsPlugin extends JavaPlugin {
         langManager = new LangManager(this);
         rewardsGui = new RewardsGui(this);
         dataManager = new DataManager(this);
-        dailyReward = new DailyReward(this);
+        dailyReward = new Daily(this);
         streakConnection = new StreakConnection(this);
+        playtime = new Playtime(this);
 
         getServer().getPluginCommand("rewards").setExecutor(new RewardsCommands(this));
         getServer().getPluginCommand("crate").setExecutor(new CrateCommands(this));
+        new VoteCommand(this);
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
@@ -61,6 +67,10 @@ public class RewardsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PickUpItemListener(this), this);
 
         new EntityDismountListener(this);
+
+        if (getServer().getPluginManager().getPlugin("VotifierPlus") != null) {
+            vote = new Vote(this);
+        }
     }
 
     public void onDisable() {
@@ -93,8 +103,14 @@ public class RewardsPlugin extends JavaPlugin {
         return streakConnection;
     }
 
-    public DailyReward getDailyReward() {
+    public Daily getDailyReward() {
         return dailyReward;
+    }
+    public Vote getVoteReward() {
+        return vote;
+    }
+    public Playtime getPlaytimeManager() {
+        return playtime;
     }
 
 }

@@ -3,6 +3,7 @@ name: Rewards
 version: 1.0
 api-version: 1.21
 author: AskGaming
+soft-depend: [VotifierPlus]
 commands:
   rewards:
     description: Shows the rewards
@@ -11,4 +12,7 @@ commands:
     description: Opens a crate
     permission: rewards.crate.admin
     usage: /crate
+  vote:
+    description: Vote for the server
+    usage: /vote
 

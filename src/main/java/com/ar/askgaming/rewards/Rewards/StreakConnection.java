@@ -33,7 +33,7 @@ public class StreakConnection {
 			if (hasConnectedYesterday(p)) {	
 
                 int streak = pData.getStreak_connection()+1;
-				p.sendMessage(plugin.getLangManager().getFrom("rewards.streak_connections", p).replace("{streak}", streak+""));
+				p.sendMessage(plugin.getLangManager().getFrom("streak.on_join", p).replace("{streak}", streak+""));
 
                 pData.setStreak_connection(streak);
 

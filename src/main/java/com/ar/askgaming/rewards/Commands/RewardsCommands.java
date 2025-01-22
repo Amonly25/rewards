@@ -38,7 +38,8 @@ public class RewardsCommands implements TabExecutor{
                     int minutes = total_minutes % 60;
                     p.sendMessage("You have played for " + hours + " hours and " + minutes + " minutes");
                     return true;
-            
+                case "compare_playtime":
+                    plugin.getPlaytimeManager().compareNow();
                 default:
                     return true;
             }
