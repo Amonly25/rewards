@@ -7,6 +7,7 @@ soft-depend: [VotifierPlus]
 commands:
   rewards:
     description: Shows the rewards
+    permission: rewards.admin
     usage: /rewards
   crate:
     description: Opens a crate

@@ -34,6 +34,9 @@ public class RewardsPlugin extends JavaPlugin {
     private Daily dailyReward;
     private StreakConnection streakConnection;
     private RewardsGui rewardsGui;
+    public void setRewardsGui(RewardsGui rewardsGui) {
+        this.rewardsGui = rewardsGui;
+    }
     private Vote vote;
     private Playtime playtime;
 
@@ -63,9 +66,9 @@ public class RewardsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OpenInventoryListener(this), this);
         getServer().getPluginManager().registerEvents(new CloseInventoryListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        getServer().getPluginManager().registerEvents(new CreatureSpawnListener(this), this);
         getServer().getPluginManager().registerEvents(new PickUpItemListener(this), this);
-
+        
+        new CreatureSpawnListener(this);
         new EntityDismountListener(this);
 
         if (getServer().getPluginManager().getPlugin("VotifierPlus") != null) {

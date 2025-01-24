@@ -125,7 +125,7 @@ public class Crate implements ConfigurationSerializable {
 
         }
         textDisplay = blockLinked.getWorld().spawn(blockLinked.getLocation().add(0.5, 1, 0.5), TextDisplay.class);
-        textDisplay.setText(ChatColor.translateAlternateColorCodes('&', displayText));
+        textDisplay.setText(ChatColor.translateAlternateColorCodes('&', name));
         textDisplay.setBillboard(Billboard.CENTER);
         textDisplay.setLineWidth(128);
     }

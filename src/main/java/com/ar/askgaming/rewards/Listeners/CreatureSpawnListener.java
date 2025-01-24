@@ -1,10 +1,8 @@
 package com.ar.askgaming.rewards.Listeners;
 
-import java.util.HashMap;
-
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Enemy;
 import org.bukkit.entity.Entity;
@@ -26,42 +24,53 @@ public class CreatureSpawnListener implements Listener{
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
-    public void onCreatureSpawn(CreatureSpawnEvent e) {
-        if (e.getSpawnReason() == SpawnReason.NATURAL) {
-            Entity entity = e.getEntity();
-            if (entity instanceof Enemy){
+@EventHandler
+public void onCreatureSpawn(CreatureSpawnEvent e) {
+    if (e.getSpawnReason() == SpawnReason.NATURAL) {
+        Entity entity = e.getEntity();
+        if (entity instanceof Enemy) {
+            
+            ConfigurationSection section = plugin.getConfig().getConfigurationSection("crate_spawn_on_entity.crates_chance");
+            if (section == null) {
+                return; // No continuar si la configuración no existe.
+            }
 
-                ConfigurationSection section = plugin.getConfig().getConfigurationSection("crate_spawn_on_entity.crates_chance");
+            for (String key : section.getKeys(false)) {
+                Crate crate = plugin.getCrateManager().getCrateByName(key);
+                if (crate == null) {
+                    plugin.getLogger().warning("Crate " + key + " not found in CrateManager.");
+                    continue;
+                }
 
-                for (String key : section.getKeys(false)) {
+                double chance = section.getDouble(key);
+                double random = Math.random() * 100;
 
-                    Crate crate = plugin.getCrateManager().getCrateByName(key);
-                    if (crate != null) {
+                if (random <= chance) {
+                    ItemStack item = plugin.getCrateManager().getCrateItem(crate);
+                    Entity drop = entity.getLocation().getWorld().dropItemNaturally(entity.getLocation(), item);
+                    
 
-                        double chance = section.getDouble(key);
-                        double random = Math.random() * 100;
-                        
-                        if (random <= chance) {
-                           
-                            ItemStack item = plugin.getCrateManager().getCrateItem(crate);
-                            Entity drop = entity.getLocation().getWorld().dropItemNaturally(entity.getLocation(), item);
-
-                            if (entity.addPassenger(drop)){
-                                //Bukkit.broadcastMessage(key + " " + chance + " " + random + entity.getLocation());
-                                double health = ((Attributable) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-                                int mutiplier = plugin.getConfig().getInt("crate_spawn_on_entity.modify_health_multiplier",3);
-                                ((Attributable) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health * mutiplier);
-                                ((Enemy)entity).setHealth(health * mutiplier);
-                                break;
-                            } else {
-                                //Bukkit.broadcastMessage("§cCrate cant be added to entity");
-                                drop.remove();
+                    if (entity.addPassenger(drop)) {
+                        double health = 20.0; // Valor base por defecto.
+                        if (entity instanceof Attributable) {
+                            Attributable attributable = (Attributable) entity;
+                            AttributeInstance maxHealth = attributable.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                            if (maxHealth != null) {
+                                health = maxHealth.getBaseValue();
+                                int mutiplier = plugin.getConfig().getInt("crate_spawn_on_entity.modify_health_multiplier", 3);
+                                maxHealth.setBaseValue(health * mutiplier);
+                                ((Enemy) entity).setHealth(health * mutiplier);
                             }
                         }
+                        break;
+                    } else {
+                        plugin.getLogger().warning("Crate could not be added as a passenger.");
+                        drop.remove();
                     }
                 }
             }
         }
     }
+}
+
 }

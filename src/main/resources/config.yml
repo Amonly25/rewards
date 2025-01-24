@@ -15,23 +15,25 @@ gui:
   title: "&eRewards"
   daily:
     enabled: true
-    name: "Daily Rewards"
+    name: "&6Daily Rewards"
     lore:
-    - "&7You will receive a random item"
+    - "&7You will receive a random item "
     - "&7You can claim in: %daily%"
     material: "CHEST_MINECART"
     slot: 0
   streak:
     enabled: true
-    name: "Streak Connection"
+    name: "&2Streak Connection"
     lore:
     - "&7You will receive a reward for each connection"
     - "&7Current streak: %streak%"
-    material: "GOLD_INGOT"
+    - "&7You will receive:"
+    - "&7For each day: 1 money"
+    material: "EMERALD"
     slot: 2
   vote:
     enabled: true
-    name: "Vote Rewards"
+    name: "&3Vote Rewards"
     lore:
     - "&7You have &c%vote%&7 votes"
     - "&7Use /vote to how to vote"
@@ -39,10 +41,11 @@ gui:
     slot: 4
   playtime:
     enabled: true
-    name: "Playtime Rewards"
+    name: "&ePlaytime Rewards"
     lore:
-    - "&7You have played for &c%playtime%"
-    - "&7You will receive a reward for each hour"
+    - "&7You have played for &e%playtime%"
+    - "&7You will receive a reward if you are in the top 3"
+    - "&7Weekly check: Sunday 20:00 hs"
     material: "CLOCK"
     slot: 6
 
@@ -71,9 +74,11 @@ streak_connection:
       message: ""
       commands:
       - eco add %player% %streak% # this will give the player the amount of money equal to their streak
+      broadcast: ""
       # So with this example, the player will receive 1 money for each streak connection each time they connect to the server
     # 14: #So this will apply when the player has 14 streak connections or more
     #   message: "&7"
+    #   broadcast: "&7%player% has reached 14 streak connections! They received a bonus reward!"
     #   commands: 
     #   - eco give %player% 1400
     # 21:

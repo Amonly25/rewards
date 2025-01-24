@@ -1,6 +1,5 @@
 package com.ar.askgaming.rewards.Listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Enemy;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;

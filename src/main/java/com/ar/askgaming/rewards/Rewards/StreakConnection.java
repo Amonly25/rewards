@@ -41,8 +41,13 @@ public class StreakConnection {
 				 
                     if (Integer.valueOf(key) <= streak) {
                             
-                        String message = plugin.getConfig().getString("streak_connection.rewards." + key + ".message");
+                        String message = plugin.getConfig().getString("streak_connection.rewards." + key + ".message","");
                         List<String> commands = plugin.getConfig().getStringList("streak_connection.rewards." + key + ".commands");
+						String broadcast = plugin.getConfig().getString("streak_connection.rewards." + key  + ".broadcast", "");
+
+						if (!broadcast.equals("")) {
+							Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', broadcast).replace("%player%", p.getName()));
+						}
                         
                         if (!message.equals("")) {
                             p.sendMessage(ChatColor.translateAlternateColorCodes('&', message).replace("%streak%", streak+""));

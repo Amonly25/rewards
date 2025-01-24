@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import com.ar.askgaming.rewards.RewardsGui;
 import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class RewardsCommands implements TabExecutor{
@@ -38,8 +39,13 @@ public class RewardsCommands implements TabExecutor{
                     int minutes = total_minutes % 60;
                     p.sendMessage("You have played for " + hours + " hours and " + minutes + " minutes");
                     return true;
-                case "compare_playtime":
+                case "compare_playtime_now":
                     plugin.getPlaytimeManager().compareNow();
+                case "reload":
+                    plugin.reloadConfig();
+                    plugin.setRewardsGui(new RewardsGui(plugin));
+                    p.sendMessage("Config reloaded");
+                    return true;
                 default:
                     return true;
             }
@@ -47,10 +53,6 @@ public class RewardsCommands implements TabExecutor{
         if (args.length == 2){
             switch (args[0].toLowerCase()) {
                 case "reset_playtime":
-                    if (!p.hasPermission("rewards.admin")){
-                        p.sendMessage("You do not have permission to use this command");
-                        return true;
-                    }
                     Player target = plugin.getServer().getPlayer(args[1]);
                     if (target == null){
                         p.sendMessage("Player not found");
@@ -70,6 +72,9 @@ public class RewardsCommands implements TabExecutor{
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1){
+            return List.of("playtime", "compare_playtime_now", "reset_playtime","reload");
+        }
         return null;
     }
 
