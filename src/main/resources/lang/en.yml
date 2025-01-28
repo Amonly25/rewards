@@ -8,6 +8,9 @@ daily:
 streack_connection:
   on_join: "&7You have a streak connection of &e{streak}!"  
 
+playtime:
+  get: "&7Your playtime is &e{hours}h {minutes}m."
+
 crates:
   no_longer_exists: "&cThis crate no longer exists."
   use_crate_to_open: "&cUse a crate to open it."

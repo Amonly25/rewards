@@ -27,7 +27,7 @@ public class Playtime extends BukkitRunnable {
 
         runTaskTimer(plugin, 0, 20*60*60);
     }
-    public String getText(Player p) {
+    public String getText(OfflinePlayer p) {
         int ticks = p.getStatistic(Statistic.PLAY_ONE_MINUTE);
         int totalMinutes = ticks / (20 * 60); // Convertir ticks a minutos
         int days = totalMinutes / (24 * 60);
@@ -104,4 +104,16 @@ public class Playtime extends BukkitRunnable {
         }
     }
     private HashMap<OfflinePlayer, Integer> queueRewards = new HashMap<>();
+
+    public void sendTop10(Player p){
+        HashMap<String,Integer> map = plugin.getDataManager().getAllData();
+        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
+        entryList.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
+        p.sendMessage("§6Top 10 playtime:");
+        for (int i = 0; i < Math.min(entryList.size(), 10); i++) {
+            UUID uuid = UUID.fromString(entryList.get(i).getKey());
+            OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+            p.sendMessage("§e" + (i + 1) + ". " + player.getName() + " - " + getText(player));
+        }
+    }
 }

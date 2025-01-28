@@ -2,13 +2,11 @@ package com.ar.askgaming.rewards.Commands;
 
 import java.util.List;
 
-import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.ar.askgaming.rewards.RewardsGui;
 import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class RewardsCommands implements TabExecutor{
@@ -31,40 +29,14 @@ public class RewardsCommands implements TabExecutor{
             plugin.getRewardsGui().openGui(p);
             return true;
         }
-        if (args.length == 1){
-            switch (args[0].toLowerCase()) {
-                case "playtime":
-                    int total_minutes = p.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60;
-                    int hours = total_minutes / 60;
-                    int minutes = total_minutes % 60;
-                    p.sendMessage("You have played for " + hours + " hours and " + minutes + " minutes");
-                    return true;
-                case "compare_playtime_now":
-                    plugin.getPlaytimeManager().compareNow();
-                case "reload":
-                    plugin.reloadConfig();
-                    plugin.setRewardsGui(new RewardsGui(plugin));
-                    p.sendMessage("Config reloaded");
-                    return true;
-                default:
-                    return true;
+        if (args[0].equalsIgnoreCase("reload")){
+            if (!sender.hasPermission("rewards.admin")){
+                sender.sendMessage("§cYou do not have permission to use this command");
+                return true;
             }
-        }
-        if (args.length == 2){
-            switch (args[0].toLowerCase()) {
-                case "reset_playtime":
-                    Player target = plugin.getServer().getPlayer(args[1]);
-                    if (target == null){
-                        p.sendMessage("Player not found");
-                        return true;
-                    }
-                    target.setStatistic(Statistic.PLAY_ONE_MINUTE, 0);  
-                    p.sendMessage("Playtime reset for " + target.getName());
-                    return true;
-           
-                default:
-                    return true;
-            }
+            plugin.reloadConfig();
+            sender.sendMessage("§aConfig reloaded");
+            return true;
         }
 
         return false;
@@ -72,10 +44,6 @@ public class RewardsCommands implements TabExecutor{
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1){
-            return List.of("playtime", "compare_playtime_now", "reset_playtime","reload");
-        }
         return null;
     }
-
 }

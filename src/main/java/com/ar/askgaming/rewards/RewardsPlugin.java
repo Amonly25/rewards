@@ -4,6 +4,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ar.askgaming.rewards.Commands.CrateCommands;
+import com.ar.askgaming.rewards.Commands.PlaytimeCommands;
 import com.ar.askgaming.rewards.Commands.RewardsCommands;
 import com.ar.askgaming.rewards.Commands.VoteCommand;
 import com.ar.askgaming.rewards.Crates.Crate;
@@ -58,6 +59,7 @@ public class RewardsPlugin extends JavaPlugin {
         getServer().getPluginCommand("rewards").setExecutor(new RewardsCommands(this));
         getServer().getPluginCommand("crate").setExecutor(new CrateCommands(this));
         new VoteCommand(this);
+        new PlaytimeCommands(this);
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
