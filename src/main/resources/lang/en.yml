@@ -1,30 +1,30 @@
 daily:
-  cant_claim_yet: "&cYou can't claim your daily reward yet."
+  cant_claim_yet: "&cAún no puedes reclamar tu recompensa diaria."
   time_left: "&c{hours}h {minutes}m {seconds}s"
-  now: "&eNow!"
-  can_claim: "&eYou can claim your daily reward now!"
-  broadcast: "&a{player} &7has received a &e{item} &7as a daily reward!"
+  now: "&e¡Ahora!"
+  can_claim: "&e¡Puedes reclamar tu recompensa diaria ahora!"
+  broadcast: "&a{player} &7ha recibido un &e{item} &7como recompensa diaria."
 
-streack_connection:
-  on_join: "&7You have a streak connection of &e{streak}!"  
+streak:
+  on_join: "&7Tienes una racha de conexión de &e{streak}!"
 
 playtime:
-  get: "&7Your playtime is &e{hours}h {minutes}m."
+  get: "&7Tu tiempo de juego es de &e{hours}h {minutes}m."
 
 crates:
-  no_longer_exists: "&cThis crate no longer exists."
-  use_crate_to_open: "&cUse a crate to open it."
-  need_key: "&cYou need a key to open this crate."
-  opening: "&eOpening..."
-  got_item: "&aYou got &e{item}&a!"
-  got_nothing: "&cYou got nothing, better luck next time!"
-  broadcast: "&a{player} &7opened a &e{crate}&a! &7and got &e{item}&a!"
-  no_rewards: "&cNo rewards found for this crate."
+  no_longer_exists: "&cEsta caja ya no existe."
+  use_crate_to_open: "&cUsa una caja para abrirla."
+  need_key: "&cNecesitas una llave para abrir esta caja."
+  opening: "&eAbriendo..."
+  got_item: "&a¡Has obtenido &e{item}&a!"
+  got_nothing: "&cNo obtuviste nada, ¡mejor suerte la próxima vez!"
+  broadcast: "&a{player} &7abrió una &e{crate}&a! &7y obtuvo &e{item}&a!"
+  no_rewards: "&cNo se encontraron recompensas para esta caja."
 
 vote:
-- "&7Vote for the server"
-- "&7You can vote every 24 hours"
-- "&aLink: "
+- "&7Vota por el servidor"
+- "&7Puedes votar cada 24 horas"
+- "&aEnlace: "
 
 misc:
-  inventory_full: "&cYour inventory is full, dropping items on the ground."
+  inventory_full: "&cTu inventario está lleno, los objetos caerán al suelo."
