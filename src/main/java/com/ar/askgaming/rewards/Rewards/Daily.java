@@ -45,7 +45,13 @@ public class Daily {
             }
         }
         ItemStack reward = new ItemStack(getRandomMaterial(blacklistMaterials));
-        p.getInventory().addItem(reward);
+        int slot = p.getInventory().firstEmpty();
+        if (slot == -1) {
+            p.getWorld().dropItem(p.getLocation(), reward);
+        } else {
+            p.getInventory().addItem(reward);
+        }
+        
         for (Player player : Bukkit.getOnlinePlayers()) {
 
             String itemName = reward.getType().name().toLowerCase().replace("_", " ");
