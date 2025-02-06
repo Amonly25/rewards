@@ -299,8 +299,12 @@ public class CrateCommands implements TabExecutor {
             sender.sendMessage("§cUsage: crate give <name> <player> <crate/key>");
             return;
         }
-
-        target.getInventory().addItem(crate.getCrateItem());
         sender.sendMessage("§6Crate given to " + target.getName());
+        int slot = target.getInventory().firstEmpty();
+        if (slot == -1) {
+            target.getWorld().dropItem(target.getLocation(), crate.getCrateItem());
+            return;
+        }
+        target.getInventory().addItem(crate.getCrateItem());
     }
 }
