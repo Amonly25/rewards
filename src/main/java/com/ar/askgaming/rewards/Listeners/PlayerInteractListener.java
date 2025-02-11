@@ -69,7 +69,7 @@ public class PlayerInteractListener implements Listener{
         if (similar == null || similar.getType() == Material.AIR){
             p.sendMessage("§cCrate key is not set correctly, setting default key item.");
             similar = crate.setDefaultKey();
-            plugin.getCrateManager().save();
+            plugin.getCrateManager().save(crate);
             return;
         }
         if (similar.getType()== item.getType()){

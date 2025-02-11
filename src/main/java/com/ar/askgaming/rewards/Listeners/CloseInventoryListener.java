@@ -23,14 +23,18 @@ public class CloseInventoryListener implements Listener{
     public void closeInventory(InventoryCloseEvent e){
         Player p = (Player) e.getPlayer();
         Inventory inv = e.getInventory();
-        Iterator<Map.Entry<Crate, Inventory>> iterator = plugin.getCrateManager().getEditing().entrySet().iterator();
+        Iterator<Map.Entry<String, Inventory>> iterator = plugin.getCrateManager().getEditing().entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<Crate, Inventory> entry = iterator.next();
+            Map.Entry<String, Inventory> entry = iterator.next();
             if (entry.getValue().equals(inv)) {
-                Crate crate = entry.getKey();
+                Crate crate = plugin.getCrateManager().getCrateByName(entry.getKey());
+                if (crate == null) {
+                    iterator.remove();
+                    return;
+                }
                 ItemStack[] rewards = inv.getContents();
                 crate.setRewards(rewards);
-                plugin.getCrateManager().save();
+                plugin.getCrateManager().save(crate);
                 iterator.remove();
                 p.sendMessage("§aCrate rewards saved!");
             }

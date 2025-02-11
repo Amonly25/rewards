@@ -57,19 +57,22 @@ public class Crate implements ConfigurationSerializable {
     }
     public Crate(Map<String, Object> map) {
         this.name = (String) map.get("name");
-        this.openCost = (double) map.get("openCost");
+        this.openCost = ((Number) map.get("openCost")).doubleValue();
+
         this.isKeyRequired = (boolean) map.get("isKeyRequired");
         this.crateItem = (ItemStack) map.get("crateItem");
         this.openFromInventory = (boolean) map.get("openFromInventory");
         this.openByBlock = (boolean) map.get("openByBlock");
         this.displayText = (String) map.get("displayText");
 
-        if ( map.get("blockLinked") instanceof Location){
-            Location loc = (Location) map.get("blockLinked");
+        Object blockObj = map.get("blockLinked");
+        if (blockObj instanceof Location loc) {
             this.blockLinked = loc.getBlock();
-            createDefaultTextDisplay();
-            
         }
+        if (this.blockLinked != null) {
+            createDefaultTextDisplay();
+        }
+
         this.keyItem = (ItemStack) map.get("keyItem");
 
         Object object = map.get("rewards");
@@ -119,12 +122,20 @@ public class Crate implements ConfigurationSerializable {
     }
     //#region defaultDis
     public void createDefaultTextDisplay() {
+        if (blockLinked == null || blockLinked.getWorld() == null) {
+            return;
+        }
         if (textDisplay != null) {
             textDisplay.teleport(blockLinked.getLocation().add(0.5, 1.2, 0.5));
             return;
-
         }
         textDisplay = blockLinked.getWorld().spawn(blockLinked.getLocation().add(0.5, 1, 0.5), TextDisplay.class);
+        String name;
+        if (displayText != null) {
+            name = displayText;
+        } else {
+            name = "§6" + this.name + " Crate";
+        }
         textDisplay.setText(ChatColor.translateAlternateColorCodes('&', name));
         textDisplay.setBillboard(Billboard.CENTER);
         textDisplay.setLineWidth(128);

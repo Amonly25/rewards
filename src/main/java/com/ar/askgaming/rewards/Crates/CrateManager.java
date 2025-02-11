@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -44,9 +45,9 @@ public class CrateManager {
         return key;
     }
 
-    private HashMap<Crate, Inventory> editing = new HashMap<>();
+    private HashMap<String, Inventory> editing = new HashMap<>();
 
-    public HashMap<Crate, Inventory> getEditing() {
+    public HashMap<String, Inventory> getEditing() {
         return editing;
     }
     public CrateManager(RewardsPlugin plugin) {
@@ -63,12 +64,17 @@ public class CrateManager {
             config.load(file);
         } catch (Exception e) {
             e.printStackTrace();
+            plugin.getLogger().warning("Error loading crates.yml");
+            return;
         }
+        Set<String> keys = config.getKeys(false);
+        if (keys == null) return;
 
         //Load crates from config
-        for (String key : config.getKeys(false)) {
-            if (config.get(key) instanceof Crate) {
-                Crate crate = (Crate) config.get(key);
+        for (String key : keys) {
+            Object obj = config.get(key);
+            if (obj instanceof Crate) {
+                Crate crate = (Crate) obj;
                 crates.put(key, crate);
             }
         }
@@ -83,7 +89,7 @@ public class CrateManager {
         crates.put(name, newCrate);
         addCrateToGui(newCrate);
 
-        save();
+        save(newCrate);
         return true;
     }
     //#region delete
@@ -97,18 +103,22 @@ public class CrateManager {
         if (crate.getItemDisplay() != null){
             crate.getItemDisplay().remove();
         }
-
-        save();
-
-    }
-    public void save() {
-        for (String key : crates.keySet()) {
-            config.set(key, crates.get(key));
-        }
+        
         try {
             config.save(file);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        updateGui();
+
+    }
+    public void save(Crate crate) {
+        try {
+            config.set(crate.getName(), crate);
+            config.save(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            plugin.getLogger().warning("Error saving crate: " + crate.getName());
         }
     }
 
@@ -178,7 +188,7 @@ public class CrateManager {
         itemDisplay.setCustomNameVisible(true);
         itemDisplay.setItemDisplayTransform(ItemDisplayTransform.GROUND);
         itemDisplay.setBillboard(Billboard.CENTER);
-
+        
         new BukkitRunnable() {		
             int count = 10;
             
