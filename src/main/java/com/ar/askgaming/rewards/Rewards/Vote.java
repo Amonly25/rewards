@@ -11,7 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import com.ar.askgaming.rewards.RewardsPlugin;
-import com.ar.askgaming.rewards.Managers.PlayerData;
+import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 public class Vote implements Listener{
@@ -41,7 +41,7 @@ public class Vote implements Listener{
 
         Player player = Bukkit.getPlayer(playerName);
         if (player == null) return;
-        PlayerData pData = plugin.getDataManager().getPlayerData(player);
+        RewardsPlayerData pData = plugin.getDatabaseManager().loadPlayerData(player.getUniqueId());
         pData.setVotes(pData.getVotes() + 1);
         pData.save();
 

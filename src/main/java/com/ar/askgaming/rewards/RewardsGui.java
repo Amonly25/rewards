@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
+
 public class RewardsGui {
 
     private final RewardsPlugin plugin;
@@ -30,10 +32,12 @@ public class RewardsGui {
     }
 
     private void setItem(Inventory inv, Player p) {
+        RewardsPlayerData data = plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
         configureItem(inv, p, "daily", plugin.getDailyReward().getText(p));
-        configureItem(inv, p, "streak", String.valueOf(plugin.getDataManager().getPlayerData(p).getStreak_connection()));
-        configureItem(inv, p, "vote", String.valueOf(plugin.getDataManager().getPlayerData(p).getVotes()));
-        configureItem(inv, p, "playtime", plugin.getPlaytimeManager().getText(p));
+        configureItem(inv, p, "streak", String.valueOf(data.getStreakConnection()));
+        configureItem(inv, p, "vote", String.valueOf(data.getVotes()));
+        configureItem(inv, p, "playtime", plugin.getPlaytimeManager().getPlaytimeFormmated(p));
+        configureItem(inv, p, "referrals", data.getReferredPlayers().size() + "");
     }
 
     private void configureItem(Inventory inv, Player p, String key, String placeholder) {
@@ -54,7 +58,12 @@ public class RewardsGui {
         List<String> lore = plugin.getConfig().getStringList("gui." + key + ".lore");
         List<String> newLore = new ArrayList<>();
         for (String line : lore) {
-            newLore.add(colorize(line.replace("%" + key + "%", placeholder)));
+            if (key.equals("referrals")){
+
+                line = line.replace("%" + key + "%", placeholder);
+                line = line.replace("%code%", plugin.getReferrals().getRefferalCode(p));
+                newLore.add(colorize(line));
+            } else newLore.add(colorize(line.replace("%" + key + "%", placeholder)));
         }
         meta.setLore(newLore);
         item.setItemMeta(meta);

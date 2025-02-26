@@ -1,3 +1,10 @@
+#database: sqlite, mysql
+data_mode: "sqlite"
+mysql:
+  url: "host:port/database_name"
+  username: "yourUsername"
+  password: "yourPassword"
+
 # This will add a crate to the head of the mob, and will be dropped when the mob is killed
 # Only works for mobs that spawn naturally in the world
 crate_spawn_on_entity:
@@ -48,6 +55,17 @@ gui:
     - "&7Weekly check: Sunday 20:00 hs"
     material: "CLOCK"
     slot: 6
+  referrals:
+    enabled: true
+    name: "&eReferral Rewards"
+    lore:
+    - "&7You have referred &a%referrals%&7 players"
+    - "&7Your code is: &6%code%"
+    - "&7You will receive a reward for each referral"
+    - "&7New Players can use /refer <code> to use your code and receive a reward"
+    - "&8Rewards:"
+    material: "TOTEM_OF_UNDYING"
+    slot: 8
 
 # Daily rewards
 # This will give the player a reward for logging in daily
@@ -135,3 +153,31 @@ playtime:
       broadcast: ""
       commands:
       - eco give %player% 15
+
+
+# Referral rewards
+referral:
+  no_count_old_players: true #If true, old players cant use a referral code (If his playtime is more than 1 hour)
+  after_how_much_playtime: 30 #If the new player has played more than 30 minutes, the referred player will receive the reward
+  #The referrer will receive the reward anyway.
+  rewards:
+    to_referrer:
+      message: "Thanks for referring a new player! You will receive: " #this message will be sended to the player
+      commands:
+      - eco give %player% 5
+      # add tokens or something especial
+    to_referred:
+      message: "Thanks for using a referral code! You will receive: " #this message will be sended to the player
+      commands:
+      - eco give %player% 100
+      # - add tokens or something especial
+  on_buy_commands:
+  # you can use a command (maybe on your store) to give a reward to the referrer
+  # you must use for example: /referrals add <buyer> <amount>
+  # If the buyer has used a referral code, the referrer will receive the next reward
+  # If the buyer has not used a referral code, the command will not be executed
+  # The amount is the amount of that you used in the command
+  # Take care, the referrer maybe will be offline, we dont queue the rewards.
+  - eco give %player% %amount% # This will work even if the player is offline or online
+  - give %player% diamond 1 # This will no work if the players is offline
+  # - tokens add %player% %amount%

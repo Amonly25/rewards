@@ -18,4 +18,8 @@ commands:
   playtime:
     description: Shows the playtime
     usage: /playtime
+  referral:
+    description: Shows the referral
+    usage: /referral
+    aliases: [ref, referr, referrals]
 

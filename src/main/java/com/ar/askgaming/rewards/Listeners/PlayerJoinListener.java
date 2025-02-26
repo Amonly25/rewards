@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.ar.askgaming.rewards.RewardsPlugin;
 
@@ -19,12 +20,13 @@ public class PlayerJoinListener implements Listener{
     public void onJoin(PlayerJoinEvent e) {
         
         Player p = e.getPlayer();
-        if (!p.hasPlayedBefore()){
-            //Bukkit.broadcastMessage("First join!");
-        }
 
-        plugin.getDataManager().loadOrCreatePlayerData(p);
-        plugin.getPlaytimeManager().update(p);
+        plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
+        plugin.getDataManager().convertData(p.getUniqueId());
+
+        if (!p.hasPlayedBefore()){
+            plugin.getReferrals().checkOnJoin(p);
+        }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if (plugin.getDailyReward().canClaimDailyReward(p)){
@@ -38,6 +40,11 @@ public class PlayerJoinListener implements Listener{
 
         }, 100);
 
+    }
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        Player p = e.getPlayer();
+        plugin.getPlaytimeManager().updatePlaytime(p);
     }
     
 }

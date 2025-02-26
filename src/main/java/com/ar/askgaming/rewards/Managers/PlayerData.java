@@ -1,61 +1,49 @@
 package com.ar.askgaming.rewards.Managers;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Statistic;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
-import com.ar.askgaming.rewards.RewardsPlugin;
-
 public class PlayerData implements ConfigurationSerializable{
+
+    private UUID uuid;
+    private long lastClaim;
+    private int streak_connection;
+    private int playtime;
+    private int votes;
+    private String last_connection;
+    private String referralCode;
+    private List<String> referredPlayers;
+    private String referredBy;
+    private boolean hasClaimedReferral;
+    private boolean givedRewardToReferrer;
 
     private File file;
     private FileConfiguration config;
 
-    private RewardsPlugin plugin = RewardsPlugin.getPlugin(RewardsPlugin.class);
-
     public PlayerData(Player player) {
-        this.player = player;
-
+        this.uuid = player.getUniqueId();
         this.lastClaim = 0;
         this.streak_connection = 0;
         this.playtime = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
         this.votes = 0;
         this.last_connection = "";
+        this.referralCode = "";
+        this.referredPlayers = new ArrayList<>();
+        this.referredBy = "";
+        this.hasClaimedReferral = false;
+        this.givedRewardToReferrer = false;
 
-        file = new File(plugin.getDataFolder() + "/playerdata", player.getUniqueId() + ".yml");
-
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-
-                config = new YamlConfiguration();
-
-                config.load(file);
-                config.set(player.getUniqueId().toString(), this);
-                save();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-            }
-        }
     }
-    public void save(){
-        try {
-            config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+ 
     public PlayerData(Map<String, Object> map) {
         if (map.get("last_claim") instanceof Integer){
             this.lastClaim = (int) map.get("last_claim");
@@ -68,6 +56,39 @@ public class PlayerData implements ConfigurationSerializable{
         this.votes = (int) map.get("votes");
         this.last_connection = (String) map.get("last_connection");
 
+        Object referralCode = map.get("referral_code");
+        if (referralCode != null){
+            this.referralCode = (String) referralCode;
+        } else {
+            this.referralCode = "";
+        }
+        Object referredPlayers = map.get("referred_players");
+        if (referredPlayers != null){
+            this.referredPlayers = (List<String>) referredPlayers;
+        } else {
+            this.referredPlayers = new ArrayList<>();
+        }
+
+        Object referredBy = map.get("referred_by");
+        if (referredBy != null){
+            this.referredBy = (String) referredBy;
+        } else {
+            this.referredBy = "";
+        }
+        Object hasClaimedReferral = map.get("has_claimed_referral");
+        if (hasClaimedReferral != null){
+            this.hasClaimedReferral = (boolean) hasClaimedReferral;
+        } else {
+            this.hasClaimedReferral = false;
+        }
+        Object givedRewardToReferrer = map.get("gived_reward_to_referrer");
+        if (givedRewardToReferrer != null){
+            this.givedRewardToReferrer = (boolean) givedRewardToReferrer;
+        } else {
+            this.givedRewardToReferrer = false;
+        }
+
+
     }
     @Override
     public Map<String, Object> serialize() {
@@ -77,29 +98,23 @@ public class PlayerData implements ConfigurationSerializable{
         map.put("playtime", playtime);
         map.put("votes", votes);   
         map.put("last_connection", last_connection); 
+        map.put("referral_code", referralCode);
+        map.put("referred_players", referredPlayers);
+        map.put("referred_by", referredBy);
+        map.put("has_claimed_referral", hasClaimedReferral);
+        map.put("gived_reward_to_referrer", givedRewardToReferrer);
 
         return map;
     }
 
-    private Player player;
-    private long lastClaim;
-    private int streak_connection;
-    private int playtime;
-    private int votes;
-    private String last_connection;
-
+    //#region Getters and Setters
     public String getLast_connection() {
         return last_connection;
     }
     public void setLast_connection(String last_connection) {
         this.last_connection = last_connection;
     }
-    public Player getPlayer() {
-        return player;
-    }
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
+
     public long getLastClaim() {
         return lastClaim;
     }
@@ -124,18 +139,56 @@ public class PlayerData implements ConfigurationSerializable{
     public void setVotes(int votes) {
         this.votes = votes;
     }
+    public String getReferralCode() {
+        return referralCode;
+    }
+    public void setReferralCode(String referralCode) {
+        this.referralCode = referralCode;
+    }
+    public List<String> getReferredPlayers() {
+        return referredPlayers;
+    }
+    public void setReferredPlayers(List<String> referredPlayers) {
+        this.referredPlayers = referredPlayers;
+    }
+    public String getReferredBy() {
+        return referredBy;
+    }
+    public void setReferredBy(String referredBy) {
+        this.referredBy = referredBy;
+    }
+    public boolean isHasClaimedReferral() {
+        return hasClaimedReferral;
+    }
+    public void setHasClaimedReferral(boolean hasClaimedReferral) {
+        this.hasClaimedReferral = hasClaimedReferral;
+    }
+    public boolean isGivedRewardToReferrer() {
+        return givedRewardToReferrer;
+    }
+    public void setGivedRewardToReferrer(boolean givedRewardToReferrer) {
+        this.givedRewardToReferrer = givedRewardToReferrer;
+    }
     public File getFile() {
         return file;
     }
+
     public void setFile(File file) {
         this.file = file;
     }
+
     public FileConfiguration getConfig() {
         return config;
     }
+
     public void setConfig(FileConfiguration config) {
         this.config = config;
     }
-
+    public UUID getUuid() {
+        return uuid;
+    }
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 
 }

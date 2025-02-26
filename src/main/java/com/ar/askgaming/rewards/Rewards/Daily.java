@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.ar.askgaming.rewards.RewardsPlugin;
-import com.ar.askgaming.rewards.Managers.PlayerData;
+import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
 
 public class Daily {
 
@@ -34,6 +34,7 @@ public class Daily {
         blacklist.add("STRUCTURE_VOID");
         blacklist.add("JIGSAW");
         blacklist.add("SPAWNER");
+        blacklist.add("DEBUG_STICK");
 
         }
         List<Material> blacklistMaterials = new ArrayList<>();
@@ -58,8 +59,8 @@ public class Daily {
             player.sendMessage(plugin.getLangManager().getFrom("daily.broadcast", p).replace("{player}", p.getName()).replace("{item}", itemName));
         }
 
-        PlayerData data = plugin.getDataManager().getPlayerData(p);
-        data.setLastClaim(System.currentTimeMillis());
+        RewardsPlayerData data = plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
+        data.setLastDailyClaim(System.currentTimeMillis());
         data.save();
     }
 
@@ -75,8 +76,8 @@ public class Daily {
         return randomMaterial;
     }
     public boolean canClaimDailyReward(Player p){
-        PlayerData data = plugin.getDataManager().getPlayerData(p);
-        long lastClaim = data.getLastClaim();
+        RewardsPlayerData data = plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
+        long lastClaim = data.getLastDailyClaim();
         long currentTime = System.currentTimeMillis();
         long cooldown = 86400000; // 24 horas en milisegundos
 
@@ -86,8 +87,8 @@ public class Daily {
         return true;
     }
     public String getText(Player p){
-        PlayerData data = plugin.getDataManager().getPlayerData(p);
-        long lastClaim = data.getLastClaim();
+        RewardsPlayerData data = plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
+        long lastClaim = data.getLastDailyClaim();
         long currentTime = System.currentTimeMillis();
         long cooldown = 86400000; // 24 horas en milisegundos
 

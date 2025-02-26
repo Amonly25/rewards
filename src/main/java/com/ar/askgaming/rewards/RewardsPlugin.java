@@ -1,5 +1,8 @@
 package com.ar.askgaming.rewards;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,8 +23,10 @@ import com.ar.askgaming.rewards.Listeners.PlaceBlockListener;
 import com.ar.askgaming.rewards.Listeners.PlayerInteractListener;
 import com.ar.askgaming.rewards.Listeners.PlayerJoinListener;
 import com.ar.askgaming.rewards.Managers.DataManager;
+import com.ar.askgaming.rewards.Managers.DatabaseManager;
 import com.ar.askgaming.rewards.Managers.LangManager;
 import com.ar.askgaming.rewards.Managers.PlayerData;
+import com.ar.askgaming.rewards.Referrals.ReferralsManager;
 import com.ar.askgaming.rewards.Rewards.Daily;
 import com.ar.askgaming.rewards.Rewards.Playtime;
 import com.ar.askgaming.rewards.Rewards.StreakConnection;
@@ -35,11 +40,10 @@ public class RewardsPlugin extends JavaPlugin {
     private Daily dailyReward;
     private StreakConnection streakConnection;
     private RewardsGui rewardsGui;
-    public void setRewardsGui(RewardsGui rewardsGui) {
-        this.rewardsGui = rewardsGui;
-    }
+    private ReferralsManager referrals;
     private Vote vote;
     private Playtime playtime;
+    private DatabaseManager databaseManager;
 
     public void onEnable() {
 
@@ -48,12 +52,25 @@ public class RewardsPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(Crate.class,"Crate");
         ConfigurationSerialization.registerClass(PlayerData.class,"PlayerData");
 
+        databaseManager = new DatabaseManager(this);
+
+        try (Connection conn = databaseManager.connect()) {
+            getLogger().info("Connected to database.");
+            databaseManager.createTable();
+            databaseManager.createRefferalsCodeTable();
+        } catch (SQLException e) {
+            getLogger().severe("Failed to connect to the database. Disabling plugin...");
+            getServer().getPluginManager().disablePlugin(this);
+            e.printStackTrace();
+        }
+
         crateManager = new CrateManager(this);
         langManager = new LangManager(this);
         rewardsGui = new RewardsGui(this);
         dataManager = new DataManager(this);
         dailyReward = new Daily(this);
         streakConnection = new StreakConnection(this);
+        referrals = new ReferralsManager(this);
         playtime = new Playtime(this);
 
         getServer().getPluginCommand("rewards").setExecutor(new RewardsCommands(this));
@@ -91,6 +108,9 @@ public class RewardsPlugin extends JavaPlugin {
             }
         });
     }
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
     public CrateManager getCrateManager() {
         return crateManager;
     }
@@ -107,6 +127,9 @@ public class RewardsPlugin extends JavaPlugin {
     public StreakConnection getStreakConnection() {
         return streakConnection;
     }
+    public ReferralsManager getReferrals() {
+        return referrals;
+    }
 
     public Daily getDailyReward() {
         return dailyReward;
@@ -116,6 +139,9 @@ public class RewardsPlugin extends JavaPlugin {
     }
     public Playtime getPlaytimeManager() {
         return playtime;
+    }
+    public void setRewardsGui(RewardsGui rewardsGui) {
+        this.rewardsGui = rewardsGui;
     }
 
 }

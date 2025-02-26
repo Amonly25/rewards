@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.ar.askgaming.rewards.RewardsPlugin;
-import com.ar.askgaming.rewards.Managers.PlayerData;
+import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
 
 public class Playtime extends BukkitRunnable {
 
@@ -27,7 +27,7 @@ public class Playtime extends BukkitRunnable {
 
         runTaskTimer(plugin, 0, 20*60*60);
     }
-    public String getText(OfflinePlayer p) {
+    public String getPlaytimeFormmated(OfflinePlayer p) {
         int ticks = p.getStatistic(Statistic.PLAY_ONE_MINUTE);
         int totalMinutes = ticks / (20 * 60); // Convertir ticks a minutos
         int days = totalMinutes / (24 * 60);
@@ -35,10 +35,12 @@ public class Playtime extends BukkitRunnable {
         int minutes = totalMinutes % 60;
         return days + "d " + hours + "h " + minutes + "m";
     }
-    public void update(Player p) {
-        PlayerData data = plugin.getDataManager().getPlayerData(p);
-        data.setPlaytime(p.getStatistic(Statistic.PLAY_ONE_MINUTE));
-        data.save();
+    public int getPlaytimeMinutes(Player p) {
+        int ticks = p.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        int totalMinutes = ticks / (20 * 60); // Convertir ticks a minutos
+        return totalMinutes;
+    }
+    public void checkQueueRewards(Player p) {
 
         OfflinePlayer q = Bukkit.getOfflinePlayer(p.getUniqueId());
         if (queueRewards.containsKey(q)) {
@@ -47,11 +49,19 @@ public class Playtime extends BukkitRunnable {
 
         }
     }
-
+    public void updatePlaytime(Player p) {
+        RewardsPlayerData data = plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
+        data.setPlaytime(p.getStatistic(Statistic.PLAY_ONE_MINUTE));
+        data.save();
+    }
 
     @Override
     public void run() {
         
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            updatePlaytime(p);
+        }
+
         String day = plugin.getConfig().getString("playtime.check_on","SUNDAY");
         int hour = plugin.getConfig().getInt("playtime.at", 20);
 
@@ -64,7 +74,7 @@ public class Playtime extends BukkitRunnable {
         }
     }
     public void compareNow(){
-        HashMap<String,Integer> map = plugin.getDataManager().getAllData();
+        HashMap<String,Integer> map = plugin.getDataManager().getPlaytimeTop();
         checkTopForReward(map);  
     }
     private void checkTopForReward(HashMap<String,Integer> map) {
@@ -106,14 +116,14 @@ public class Playtime extends BukkitRunnable {
     private HashMap<OfflinePlayer, Integer> queueRewards = new HashMap<>();
 
     public void sendTop10(Player p){
-        HashMap<String,Integer> map = plugin.getDataManager().getAllData();
+        HashMap<String,Integer> map = plugin.getDataManager().getPlaytimeTop();
         List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
         entryList.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
         p.sendMessage("§6Top 10 playtime:");
         for (int i = 0; i < Math.min(entryList.size(), 10); i++) {
             UUID uuid = UUID.fromString(entryList.get(i).getKey());
             OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-            p.sendMessage("§e" + (i + 1) + ". " + player.getName() + " - " + getText(player));
+            p.sendMessage("§e" + (i + 1) + ". " + player.getName() + " - " + getPlaytimeFormmated(player));
         }
     }
 }

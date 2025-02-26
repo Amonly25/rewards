@@ -11,7 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.ar.askgaming.rewards.RewardsPlugin;
-import com.ar.askgaming.rewards.Managers.PlayerData;
+import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
 
 public class StreakConnection {
 
@@ -20,11 +20,11 @@ public class StreakConnection {
         this.plugin = plugin;
     }
     public void process(Player p){
-        PlayerData pData = plugin.getDataManager().getPlayerData(p);
+        RewardsPlayerData pData = plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
 
 		if (lastConnection(p).isEmpty()){
-            pData.setLast_connection(getToday());
-            pData.save();
+            pData.setLastConnection(getToday());
+			pData.save();
             return;
         }
 
@@ -32,10 +32,10 @@ public class StreakConnection {
 									
 			if (hasConnectedYesterday(p)) {	
 
-                int streak = pData.getStreak_connection()+1;
+                int streak = pData.getStreakConnection()+1;
 				p.sendMessage(plugin.getLangManager().getFrom("streak.on_join", p).replace("{streak}", streak+""));
 
-                pData.setStreak_connection(streak);
+                pData.setStreakConnection(streak);
 
                 for (String key : plugin.getConfig().getConfigurationSection("streak_connection.rewards").getKeys(false)) {
 				 
@@ -62,9 +62,9 @@ public class StreakConnection {
                 }
 			}
 			else if (resetStrekConnections(p)) {
-                pData.setStreak_connection(0);	
+                pData.setStreakConnection(0);	
 			}
-            pData.setLast_connection(getToday());
+            pData.setLastConnection(getToday());
 			pData.save();
 		}	
     }
@@ -89,9 +89,8 @@ public class StreakConnection {
 	}
 	
 	public String lastConnection(Player player) {	
-		PlayerData files = plugin.getDataManager().getPlayerData(player);
-
-		return files.getLast_connection();
+		RewardsPlayerData files = plugin.getDatabaseManager().loadPlayerData(player.getUniqueId());
+		return files.getLastConnection();
 	}
 	
 	public boolean resetStrekConnections(Player player){
