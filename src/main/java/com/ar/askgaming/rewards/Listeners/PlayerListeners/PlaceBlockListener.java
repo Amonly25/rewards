@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Listeners;
+package com.ar.askgaming.rewards.Listeners.PlayerListeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

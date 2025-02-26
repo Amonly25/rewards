@@ -171,13 +171,15 @@ referral:
       commands:
       - eco give %player% 100
       # - add tokens or something especial
-  on_buy_commands:
-  # you can use a command (maybe on your store) to give a reward to the referrer
-  # you must use for example: /referrals add <buyer> <amount>
-  # If the buyer has used a referral code, the referrer will receive the next reward
-  # If the buyer has not used a referral code, the command will not be executed
-  # The amount is the amount of that you used in the command
-  # Take care, the referrer maybe will be offline, we dont queue the rewards.
-  - eco give %player% %amount% # This will work even if the player is offline or online
-  - give %player% diamond 1 # This will no work if the players is offline
-  # - tokens add %player% %amount%
+    on_buy_commands:
+      message: "A referred player by you, have purchased on the store, You will receive: ? "
+      commands:
+      # you can use a command (maybe on your store) to give a reward to the referrer
+      # you must use for example: /referrals addbuy <buyer> <amount>
+      # If the buyer has used a referral code, the referrer will receive the next reward
+      # If the buyer has not used a referral code, the command will not be executed
+      # The amount is the amount of that you used in the command
+      # Take care, the referrer maybe will be offline, we dont queue the rewards.
+      - eco give %player% %amount% # This will work even if the player is offline or online
+      - give %player% diamond 1 # This will no work if the players is offline
+      # - tokens add %player% %amount%

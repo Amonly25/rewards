@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Commands;
+package com.ar.askgaming.rewards.Playtime;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
 
 import com.ar.askgaming.rewards.RewardsPlugin;
 
-public class PlaytimeCommands implements TabExecutor{
+public class Commands implements TabExecutor{
 
     private RewardsPlugin plugin;
-    public PlaytimeCommands(RewardsPlugin plugin){
+    public Commands(RewardsPlugin plugin){
         this.plugin = plugin;
 
         plugin.getServer().getPluginCommand("playtime").setExecutor(this);

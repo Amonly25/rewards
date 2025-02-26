@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Listeners;
+package com.ar.askgaming.rewards.Listeners.PlayerListeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class PlayerJoinListener implements Listener{
         plugin.getDataManager().convertData(p.getUniqueId());
 
         if (!p.hasPlayedBefore()){
-            plugin.getReferrals().checkOnJoin(p);
+            plugin.getReferrals().sendMessage(p);
         }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {

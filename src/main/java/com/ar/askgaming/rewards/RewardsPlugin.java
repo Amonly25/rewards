@@ -6,31 +6,21 @@ import java.sql.SQLException;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.ar.askgaming.rewards.Commands.CrateCommands;
-import com.ar.askgaming.rewards.Commands.PlaytimeCommands;
-import com.ar.askgaming.rewards.Commands.RewardsCommands;
-import com.ar.askgaming.rewards.Commands.VoteCommand;
 import com.ar.askgaming.rewards.Crates.Crate;
 import com.ar.askgaming.rewards.Crates.CrateManager;
-import com.ar.askgaming.rewards.Listeners.BlockBreakListener;
-import com.ar.askgaming.rewards.Listeners.CloseInventoryListener;
-import com.ar.askgaming.rewards.Listeners.CreatureSpawnListener;
-import com.ar.askgaming.rewards.Listeners.EntityDismountListener;
-import com.ar.askgaming.rewards.Listeners.InventoryClickListener;
-import com.ar.askgaming.rewards.Listeners.OpenInventoryListener;
-import com.ar.askgaming.rewards.Listeners.PickUpItemListener;
-import com.ar.askgaming.rewards.Listeners.PlaceBlockListener;
-import com.ar.askgaming.rewards.Listeners.PlayerInteractListener;
-import com.ar.askgaming.rewards.Listeners.PlayerJoinListener;
+import com.ar.askgaming.rewards.Listeners.*;
+import com.ar.askgaming.rewards.Listeners.PlayerListeners.*;
 import com.ar.askgaming.rewards.Managers.DataManager;
 import com.ar.askgaming.rewards.Managers.DatabaseManager;
 import com.ar.askgaming.rewards.Managers.LangManager;
 import com.ar.askgaming.rewards.Managers.PlayerData;
+import com.ar.askgaming.rewards.Playtime.Playtime;
 import com.ar.askgaming.rewards.Referrals.ReferralsManager;
-import com.ar.askgaming.rewards.Rewards.Daily;
-import com.ar.askgaming.rewards.Rewards.Playtime;
-import com.ar.askgaming.rewards.Rewards.StreakConnection;
-import com.ar.askgaming.rewards.Rewards.Vote;
+import com.ar.askgaming.rewards.Timed.Daily;
+import com.ar.askgaming.rewards.Timed.StreakConnection;
+import com.ar.askgaming.rewards.Vote.VoteListener;
+
+import fr.xephi.authme.api.v3.AuthMeApi;
 
 public class RewardsPlugin extends JavaPlugin {
     
@@ -41,9 +31,11 @@ public class RewardsPlugin extends JavaPlugin {
     private StreakConnection streakConnection;
     private RewardsGui rewardsGui;
     private ReferralsManager referrals;
-    private Vote vote;
+    private VoteListener vote;
     private Playtime playtime;
     private DatabaseManager databaseManager;
+
+    private AuthMeApi authMeApi;
 
     public void onEnable() {
 
@@ -73,10 +65,7 @@ public class RewardsPlugin extends JavaPlugin {
         referrals = new ReferralsManager(this);
         playtime = new Playtime(this);
 
-        getServer().getPluginCommand("rewards").setExecutor(new RewardsCommands(this));
-        getServer().getPluginCommand("crate").setExecutor(new CrateCommands(this));
-        new VoteCommand(this);
-        new PlaytimeCommands(this);
+        new RewardsCommands(this);
 
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
@@ -91,7 +80,11 @@ public class RewardsPlugin extends JavaPlugin {
         new EntityDismountListener(this);
 
         if (getServer().getPluginManager().getPlugin("VotifierPlus") != null) {
-            vote = new Vote(this);
+            vote = new VoteListener(this);
+        }
+
+        if (getServer().getPluginManager().getPlugin("AuthMe") != null) {
+            authMeApi = AuthMeApi.getInstance();
         }
     }
 
@@ -107,6 +100,9 @@ public class RewardsPlugin extends JavaPlugin {
                 crate.getItemDisplay().remove();
             }
         });
+    }
+    public AuthMeApi getAuthMeApi() {
+        return authMeApi;
     }
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
@@ -134,7 +130,7 @@ public class RewardsPlugin extends JavaPlugin {
     public Daily getDailyReward() {
         return dailyReward;
     }
-    public Vote getVoteReward() {
+    public VoteListener getVoteReward() {
         return vote;
     }
     public Playtime getPlaytimeManager() {

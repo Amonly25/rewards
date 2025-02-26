@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Rewards;
+package com.ar.askgaming.rewards.Playtime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,7 +24,8 @@ public class Playtime extends BukkitRunnable {
 
     public Playtime(RewardsPlugin plugin) {
         this.plugin = plugin;
-
+        
+        new Commands(plugin);
         runTaskTimer(plugin, 0, 20*60*60);
     }
     public String getPlaytimeFormmated(OfflinePlayer p) {

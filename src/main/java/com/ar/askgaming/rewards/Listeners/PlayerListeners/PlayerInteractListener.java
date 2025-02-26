@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Listeners;
+package com.ar.askgaming.rewards.Listeners.PlayerListeners;
 
 import java.util.HashMap;
 

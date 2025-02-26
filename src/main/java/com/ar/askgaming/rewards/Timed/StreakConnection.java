@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Rewards;
+package com.ar.askgaming.rewards.Timed;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

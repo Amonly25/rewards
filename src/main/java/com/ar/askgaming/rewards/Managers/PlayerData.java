@@ -44,6 +44,7 @@ public class PlayerData implements ConfigurationSerializable{
 
     }
  
+    @SuppressWarnings("unchecked")
     public PlayerData(Map<String, Object> map) {
         if (map.get("last_claim") instanceof Integer){
             this.lastClaim = (int) map.get("last_claim");

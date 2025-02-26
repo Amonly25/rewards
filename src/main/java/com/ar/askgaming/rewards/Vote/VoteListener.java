@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Rewards;
+package com.ar.askgaming.rewards.Vote;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,12 +14,13 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
-public class Vote implements Listener{
+public class VoteListener implements Listener{
 
     private RewardsPlugin plugin;
-    public Vote(RewardsPlugin plugin){
+    public VoteListener(RewardsPlugin plugin){
         this.plugin = plugin;
 
+        new Commands(plugin);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 

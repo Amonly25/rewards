@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Commands;
+package com.ar.askgaming.rewards.Vote;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -7,10 +7,10 @@ import org.bukkit.entity.Player;
 
 import com.ar.askgaming.rewards.RewardsPlugin;
 
-public class VoteCommand implements CommandExecutor{
+public class Commands implements CommandExecutor{
 
     private RewardsPlugin plugin;
-    public VoteCommand(RewardsPlugin plugin){
+    public Commands(RewardsPlugin plugin){
         this.plugin = plugin;
 
         plugin.getServer().getPluginCommand("vote").setExecutor(this);

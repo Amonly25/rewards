@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Commands;
+package com.ar.askgaming.rewards.Crates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +19,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.ar.askgaming.rewards.RewardsPlugin;
-import com.ar.askgaming.rewards.Crates.Crate;
 
 import net.md_5.bungee.api.ChatColor;
 

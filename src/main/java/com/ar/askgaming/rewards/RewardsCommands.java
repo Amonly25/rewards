@@ -1,4 +1,4 @@
-package com.ar.askgaming.rewards.Commands;
+package com.ar.askgaming.rewards;
 
 import java.util.List;
 
@@ -7,13 +7,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.ar.askgaming.rewards.RewardsPlugin;
-
 public class RewardsCommands implements TabExecutor{
 
     private RewardsPlugin plugin;
     public RewardsCommands(RewardsPlugin plugin){
         this.plugin = plugin;
+
+        plugin.getServer().getPluginCommand("rewards").setExecutor(this);
     }
 
     @Override
