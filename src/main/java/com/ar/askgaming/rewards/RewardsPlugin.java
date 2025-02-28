@@ -78,6 +78,7 @@ public class RewardsPlugin extends JavaPlugin {
         
         new CreatureSpawnListener(this);
         new EntityDismountListener(this);
+        new EntityPortalListener(this);
 
         if (getServer().getPluginManager().getPlugin("VotifierPlus") != null) {
             vote = new VoteListener(this);
@@ -85,6 +86,7 @@ public class RewardsPlugin extends JavaPlugin {
 
         if (getServer().getPluginManager().getPlugin("AuthMe") != null) {
             authMeApi = AuthMeApi.getInstance();
+            new PlayerLoginListener(this);
         }
     }
 

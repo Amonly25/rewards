@@ -28,6 +28,8 @@ public class CrateCommands implements TabExecutor {
     private final Set<String> setValue = Set.of("key_requerid", "broadcast_reward", "cost", "block", "rewards", "remove_block", "open_from_inventory", "open_by_block", "text_display", "key_item", "crate_item");
     public CrateCommands(RewardsPlugin plugin){
         this.plugin = plugin;
+
+        plugin.getServer().getPluginCommand("crate").setExecutor(this);
     }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

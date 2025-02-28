@@ -51,6 +51,9 @@ public class CrateManager {
         return editing;
     }
     public CrateManager(RewardsPlugin plugin) {
+
+        new CrateCommands(plugin);
+
         this.plugin = plugin;
         key = new NamespacedKey(plugin, "ask_crate");
         //Create File and load config

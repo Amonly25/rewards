@@ -1,5 +1,6 @@
 package com.ar.askgaming.rewards.Referrals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.OfflinePlayer;
@@ -26,7 +27,7 @@ public class Commands implements TabExecutor{
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
-            List<String> list = List.of("getcode", "list");
+            List<String> list = new ArrayList<>(List.of("getcode", "list")); // Lista modificable
             if (sender.hasPermission("rewards.admin")) {
                 list.add("add");
                 list.add("addbuy");
@@ -39,6 +40,13 @@ public class Commands implements TabExecutor{
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
+        if (args.length == 0) {
+            sender.sendMessage("Usage: /referral <code> to claim a referral");
+            sender.sendMessage("Usage: /referral getcode to get your referral code");
+            sender.sendMessage("Usage: /referral list to see your referrals");
+            return true;
+        }
+
         switch (args[0].toLowerCase()) {
             case "getcode":
                 getCode(sender, args);
@@ -58,6 +66,7 @@ public class Commands implements TabExecutor{
         }
         return true;
     }
+    //#region addReferral
     private void addReferral(CommandSender sender, String[] args) {
         if (args.length < 1) {
             sender.sendMessage("Usage: /referral <code>");
@@ -89,6 +98,7 @@ public class Commands implements TabExecutor{
 
         plugin.getReferrals().onReferral(player, code);
     }
+    //#region getCode
     private void getCode(CommandSender sender, String[] args) {
         if (args.length == 1) {
             if (!(sender instanceof Player)) {

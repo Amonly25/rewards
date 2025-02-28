@@ -75,7 +75,7 @@ public class DatabaseManager {
                         + "referredPlayers TEXT,"
                         + "referredBy TEXT,"
                         + "hasClaimedReferral INT,"
-                        + "givedRewardToFeferrer INT"
+                        + "givedRewardToReferrer INT"
                         + ");";
                 break;
             case "MYSQL":
@@ -92,7 +92,7 @@ public class DatabaseManager {
                         + "referredPlayers TEXT,"
                         + "referredBy TEXT,"
                         + "hasClaimedReferral INT,"
-                        + "givedRewardToFeferrer INT"
+                        + "givedRewardToReferrer INT"
                         + ");";
                 break;
             default:
@@ -129,7 +129,7 @@ public class DatabaseManager {
                     String referralCode = rs.getString("referralCode");
                     String referredBy = rs.getString("referredBy");
                     boolean hasClaimedReferral = rs.getBoolean("hasClaimedReferral");
-                    boolean givedRewardToReferrer = rs.getBoolean("givedRewardToFeferrer");
+                    boolean givedRewardToReferrer = rs.getBoolean("givedRewardToReferrer");
 
                     // Convertir una lista de jugadores referidos desde un String (si está almacenado como JSON o CSV)
                     List<String> referredPlayers = new ArrayList<>();
@@ -155,11 +155,11 @@ public class DatabaseManager {
         String sql = "";
         switch (databaseType) {
             case "SQLITE":
-                sql = "INSERT INTO rewards_data (uuid, lastDailyClaim, lastWeeklyClaim, lastMonthlyClaim, streakConnection, playtime, votes, lastConnection, referralCode, referredPlayers, referredBy, hasClaimedReferral, givedRewardToFeferrer) VALUES (?, 0, 0, 0, 0, 0, 0, '', '', '', '', 0, 0);";
+                sql = "INSERT INTO rewards_data (uuid, lastDailyClaim, lastWeeklyClaim, lastMonthlyClaim, streakConnection, playtime, votes, lastConnection, referralCode, referredPlayers, referredBy, hasClaimedReferral, givedRewardToReferrer) VALUES (?, 0, 0, 0, 0, 0, 0, '', '', '', '', 0, 0);";
                 
                 break;
             case "MYSQL":
-                sql = "INSERT INTO rewards_data (uuid, lastDailyClaim, lastWeeklyClaim, lastMonthlyClaim, streakConnection, playtime, votes, lastConnection, referralCode, referredPlayers, referredBy, hasClaimedReferral, givedRewardToFeferrer) VALUES (?, 0, 0, 0, 0, 0, 0, '', '', '', '', 0, 0);";
+                sql = "INSERT INTO rewards_data (uuid, lastDailyClaim, lastWeeklyClaim, lastMonthlyClaim, streakConnection, playtime, votes, lastConnection, referralCode, referredPlayers, referredBy, hasClaimedReferral, givedRewardToReferrer) VALUES (?, 0, 0, 0, 0, 0, 0, '', '', '', '', 0, 0);";
                 break;
             default:
                 break;

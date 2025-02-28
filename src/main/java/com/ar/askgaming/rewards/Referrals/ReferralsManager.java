@@ -50,8 +50,8 @@ public class ReferralsManager extends BukkitRunnable{
 
         RewardsPlayerData data = getData(player.getUniqueId());
         data.setReferralCode(code);
+        addCodeToDatabase(player.getUniqueId(), code);
         data.save();
-        player.sendMessage("Your referral code is: " + code);
     }
     //#region Get code
     public String getRefferalCode(Player player) {
@@ -125,11 +125,9 @@ public class ReferralsManager extends BukkitRunnable{
             addCodeUseToDatabase(referrer.getUniqueId());
             Player playerOnline = referrer.getPlayer();
             if (playerOnline != null) {
-                playerOnline.sendMessage("You have a new referred player: " + sender.getName());
-                return;
+                playerOnline.sendMessage("You have a new referred player: " + sender.getName(), "when he play more than 30min, you will receive tokens. If he buy something, you will receive tokens too.");
             }
         }
-
 
         //Process referred
         sender.sendMessage("Code claimed successfully.");
@@ -164,6 +162,7 @@ public class ReferralsManager extends BukkitRunnable{
 
         for (Player p : plugin.getServer().getOnlinePlayers()) {
 
+            // Send message to player if he has not been referred
             if (messages.containsKey(p)) {
                 if (System.currentTimeMillis() - messages.get(p) < 1000*60*5) {
                     continue;
@@ -173,6 +172,7 @@ public class ReferralsManager extends BukkitRunnable{
                 sendMessage(p);
             }
 
+            // Check if player has been referred and give reward to referrer
             RewardsPlayerData data = getData(p.getUniqueId());
             if (data.getReferredBy() == null || data.getReferredBy().isEmpty()) continue;
             if (data.isGivedRewardToReferrer()) continue;
@@ -227,21 +227,35 @@ public class ReferralsManager extends BukkitRunnable{
             plugin.getLogger().info("Player " + target.getName() + " does not have a referrer, command not processed.");
             return;
         }
-        plugin.getLogger().info("Player has been referred by " + refferedBy + ", processing command.");
-        giveBuyReward(target, amount);
+        plugin.getLogger().info(target.getName() + " has been referred by " + refferedBy + ", processing command.");
+        giveBuyReward(refferedBy, amount);
     }
-    public void giveBuyReward(OfflinePlayer target, int amount) {
+    public void giveBuyReward(String target, int amount) {
+
         List<String> commands = plugin.getConfig().getStringList("referral.rewards.on_buy_commands.commands");
         String message = plugin.getConfig().getString("referral.rewards.on_buy_commands.message");
 
         for (String s : commands) {
-            s = s.replace("%player%", target.getName()).replace("%amount%", amount+"");
+            s = s.replace("%player%", target).replace("%amount%", amount+"");
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), s);
             plugin.getLogger().info("Command processed: " + s);
         }
-        Player p = plugin.getServer().getPlayer(target.getName());
+        Player p = plugin.getServer().getPlayer(target);
         if (p != null) {
             p.sendMessage(message);
+        }
+    }
+    public void addCodeToDatabase(UUID uuid, String code) {
+        String sql = "INSERT OR REPLACE INTO refferals_codes (uuid, code, uses) VALUES (?, ?, 0);";
+
+        try (Connection conn = plugin.getDatabaseManager().connect();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, code);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     public void addCodeUseToDatabase(UUID referrer) {

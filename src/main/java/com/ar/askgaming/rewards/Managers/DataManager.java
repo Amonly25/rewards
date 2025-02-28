@@ -42,7 +42,10 @@ public class DataManager {
             rpd.setReferredBy(pd.getReferredBy());
             rpd.setHasClaimedReferral(pd.isHasClaimedReferral());
             rpd.setGivedRewardToReferrer(pd.isGivedRewardToReferrer());
-        
+            rpd.save();
+            // then remove the old file
+            file.delete();
+            
         }
     }
 
