@@ -38,6 +38,10 @@ public class ReferralsManager extends BukkitRunnable{
     private RewardsPlayerData getData(UUID uuid) {
         return databaseManager.loadPlayerData(uuid);
     }
+
+    private String getLang(String key, Player player) {
+        return plugin.getLangManager().getFrom(key, player);
+    }
     //#region Create code
     public void createReferralCode(Player player) {
 
@@ -57,7 +61,7 @@ public class ReferralsManager extends BukkitRunnable{
     public String getRefferalCode(Player player) {
         RewardsPlayerData data = getData(player.getUniqueId());
         String code = data.getReferralCode();
-        if (code == null || code.isBlank()) return "Use /referral getcode";
+        if (code == null || code.isBlank()) return getLang("referral.use", player);
         return code;
     }
     public String getReferralCode(String playerName) {
@@ -104,7 +108,7 @@ public class ReferralsManager extends BukkitRunnable{
         if (data.getReferredBy() != null && !data.getReferredBy().isEmpty()) {
             return;
         }
-        p.sendMessage("You has been referred by someone? Use /referral <code>, to claim your reward.");
+        p.sendMessage(getLang("referral.has_been_referred", p));
 
     }
     //#region On Referral
@@ -113,7 +117,7 @@ public class ReferralsManager extends BukkitRunnable{
         //Process refferer
         OfflinePlayer referrer = getReferredBy(supposedCode);
         if (referrer == null) {
-            sender.sendMessage("Invalid code.");
+            sender.sendMessage(getLang("referral.code_not_found", sender));
             return;
         }
         RewardsPlayerData referrerData = getData(referrer.getUniqueId());
@@ -125,12 +129,12 @@ public class ReferralsManager extends BukkitRunnable{
             addCodeUseToDatabase(referrer.getUniqueId());
             Player playerOnline = referrer.getPlayer();
             if (playerOnline != null) {
-                playerOnline.sendMessage("You have a new referred player: " + sender.getName(), "when he play more than 30min, you will receive tokens. If he buy something, you will receive tokens too.");
+                playerOnline.sendMessage(getLang("referral.new_referral", playerOnline));
             }
         }
 
         //Process referred
-        sender.sendMessage("Code claimed successfully.");
+        sender.sendMessage(getLang("referral.on_use", sender).replace("{player}", referrer.getName()));
         RewardsPlayerData data = getData(sender.getUniqueId());
         data.setHasClaimedReferral(true);
         data.setReferredBy(referrer.getName());
@@ -203,7 +207,7 @@ public class ReferralsManager extends BukkitRunnable{
             s = s.replace("%player%", p.getName());
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), s);
         }
-        p.sendMessage(message);
+        p.sendMessage(message.replace('&', '§'));
     }
     //#region Referrer Rewards
     public void giveRewardToReferrer(String name) {
@@ -216,7 +220,7 @@ public class ReferralsManager extends BukkitRunnable{
         }
         Player p = plugin.getServer().getPlayer(name);
         if (p != null) {
-            p.sendMessage(message);
+            p.sendMessage(message.replace('&', '§'));
         }
     }
     //#region add
@@ -268,7 +272,7 @@ public class ReferralsManager extends BukkitRunnable{
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected == 0) {
-                System.out.println("No se encontró el código de referido para: " + referrer);
+                System.out.println("Code not found for " + referrer);
             }
         } catch (SQLException e) {
             e.printStackTrace();

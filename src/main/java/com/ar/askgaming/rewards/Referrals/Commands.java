@@ -23,6 +23,9 @@ public class Commands implements TabExecutor{
 
         plugin.getServer().getPluginCommand("referral").setExecutor(this);
     }
+    private String getLang(String key, Player player) {
+        return plugin.getLangManager().getFrom(key, player);
+    }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
@@ -41,9 +44,7 @@ public class Commands implements TabExecutor{
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
         if (args.length == 0) {
-            sender.sendMessage("Usage: /referral <code> to claim a referral");
-            sender.sendMessage("Usage: /referral getcode to get your referral code");
-            sender.sendMessage("Usage: /referral list to see your referrals");
+            sender.sendMessage("Usage: /referral help for more information");
             return true;
         }
 
@@ -59,6 +60,9 @@ public class Commands implements TabExecutor{
                 break;
             case "addbuy":
                 addBuy(sender, args);
+                break;
+            case "help":
+                getLang("referrals.help", (sender instanceof Player) ? (Player) sender : null);
                 break;
             default:
                 addReferral(sender, args);
@@ -80,18 +84,23 @@ public class Commands implements TabExecutor{
         String code = args[0];
         RewardsPlayerData data = plugin.getDatabaseManager().loadPlayerData(player.getUniqueId());
         if (data.getReferredBy() != null && !data.getReferredBy().isEmpty()) {
-            sender.sendMessage("You already claimed a referral.");
+            sender.sendMessage(getLang("referral.already_referred", player));
             return;
+        }
+        if (code.equalsIgnoreCase(data.getReferralCode())) {
+            sender.sendMessage(getLang("referral.already_referred", player));
+            return;
+
         }
 
         if (!plugin.getReferrals().existsCode(code)) {
-            sender.sendMessage("Code not found.");
+            sender.sendMessage(getLang("referral.code_not_found", player));
             return;
         }
         if (plugin.getConfig().getBoolean("referral.no_count_old_players")) {
             int playtime = plugin.getPlaytimeManager().getPlaytimeMinutes(player);
             if (playtime >= 60) {
-                sender.sendMessage("You have played for more than 1 hour, you cannot claim a referral.");
+                sender.sendMessage(getLang("referral.cant_use", player));
                 return;
             }
         }
@@ -100,12 +109,12 @@ public class Commands implements TabExecutor{
     }
     //#region getCode
     private void getCode(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("You must be a player to use this command");
+            return;
+        }
+        Player player = (Player) sender;
         if (args.length == 1) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage("You must be a player to use this command");
-                return;
-            }
-            Player player = (Player) sender;
             RewardsPlayerData pData = plugin.getDatabaseManager().loadPlayerData(player.getUniqueId());
 
             String code = pData.getReferralCode();
@@ -113,11 +122,12 @@ public class Commands implements TabExecutor{
                 manager.createReferralCode(player);
                 code = manager.getRefferalCode(player);
             }
-            sender.sendMessage("Your referral code is: " + code);
+            sender.sendMessage(getLang("referral.code", player).replace("{code}", code));
             return;
         }
         String playerName = args[1];
-        sender.sendMessage("Referral code for " + playerName + ": " + manager.getReferralCode(playerName));
+        String code = manager.getReferralCode(playerName);
+        sender.sendMessage(getLang("referral.his_code", player).replace("{player}", playerName).replace("{code}", code));
     }
     //#region Add
     private void add(CommandSender sender, String[] args) {
@@ -131,12 +141,12 @@ public class Commands implements TabExecutor{
         }
 
         if (!plugin.getReferrals().existsCode(args[2])) {
-            sender.sendMessage("Code does not exist");
+            sender.sendMessage("§cCode does not exist");
             return;
         }
         Player target = plugin.getServer().getPlayer(args[1]);
         if (target == null) {
-            sender.sendMessage("Player not found, make sure they are online");
+            sender.sendMessage("§cPlayer not found, make sure they are online");
             return;
         }
         
@@ -153,12 +163,13 @@ public class Commands implements TabExecutor{
         if (args.length == 1) {
             RewardsPlayerData pData = plugin.getDatabaseManager().loadPlayerData(player.getUniqueId());
             if (pData.getReferralCode() == null || pData.getReferralCode().isBlank()) {
-                sender.sendMessage("You do not have a referral code, use /referral getcode to get one");
+                sender.sendMessage(getLang("referral.code_not_found", player));
                 return;
             }
-            sender.sendMessage("Your referral code is: " + pData.getReferralCode());
-            sender.sendMessage("You have referred " + pData.getReferredPlayers().size() + " players: " + 
-                String.join(", ", pData.getReferredPlayers()));
+            String size = String.valueOf(pData.getReferredPlayers().size());
+            String players = String.join(", ", pData.getReferredPlayers());
+            sender.sendMessage(getLang("referral.code", player).replace("{code}", pData.getReferralCode()));
+            sender.sendMessage(getLang("referral.player_referred", player).replace("{size}", size).replace("{players}", players));
          
             return;
         }
@@ -169,15 +180,15 @@ public class Commands implements TabExecutor{
         OfflinePlayer target = plugin.getServer().getOfflinePlayer(args[1]);
         RewardsPlayerData pData = plugin.getDatabaseManager().loadPlayerData(target.getUniqueId());
         if (pData == null) {
-            sender.sendMessage("Player not found");
+            sender.sendMessage("§cPlayer not found");
             return;
         }
         if (pData.getReferralCode() == null || pData.getReferralCode().isBlank()) {
-            sender.sendMessage("Player does not have a referral code");
+            sender.sendMessage("§cPlayer does not have a referral code");
             return;
         }
-        sender.sendMessage("Referral code for " + target.getName() + ": " + pData.getReferralCode());
-        sender.sendMessage("Referred players: " + String.join(", ", pData.getReferredPlayers()));
+        sender.sendMessage("§7Referral code for " + target.getName() + ": " + pData.getReferralCode());
+        sender.sendMessage("§7Referred players: " + String.join(", ", pData.getReferredPlayers()));
         
     }
     //#region Add Buy
@@ -195,14 +206,14 @@ public class Commands implements TabExecutor{
         try {
             amount = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            sender.sendMessage("Amount must be an integer");
+            sender.sendMessage("§cAmount must be an integer");
             return;
         }
 
         OfflinePlayer target = plugin.getServer().getOfflinePlayer(args[1]);
         RewardsPlayerData pData = plugin.getDatabaseManager().loadPlayerData(target.getUniqueId());
         if (pData == null) {
-            sender.sendMessage("Player not found");
+            sender.sendMessage("§cPlayer not found");
             return;
         }
         sender.sendMessage("Processing add referral for " + target.getName() + " with amount " + amount);

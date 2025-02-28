@@ -1,20 +1,50 @@
-rewards:
-  daily_can_claim: "&e¡Puedes reclamar tu recompensa diaria ahora!"
+daily:
   cant_claim_yet: "&cAún no puedes reclamar tu recompensa diaria."
-  time_left: "&7¡Aún no puedes reclamar! Tiempo restante: &c{hours}h {minutes}m {seconds}s"
-  daily_broadcast: "&a{player} &7ha recibido un &e{item}&7 como recompensa diaria!"
-  current_streak: "&7Racha actual de conexiones: &c{streak}"
-  streak_connections: "&7Tienes una racha de conexiones de &e{streak}!"
+  time_left: "&c{hours}h {minutes}m {seconds}s"
+  now: "&e¡Ahora!"
+  can_claim: "&e¡Puedes reclamar tu recompensa diaria ahora!"
+  broadcast: "&a{player} &7ha recibido un &e{item} &7como recompensa diaria."
+
+streak:
+  on_join: "&7Tienes una racha de conexión de &e{streak}!"
+
+playtime:
+  get: "&7Tu tiempo de juego es de &e{hours}h {minutes}m."
+
+referral:
+
+  cant_refer_yourself: "&cNo puedes referirte a ti mismo."
+  already_referred: "&cYa has introducido un código de referido."
+  code_not_found: "&cNo se ha encontrado el código de referido."
+  cant_use: "&cNo puedes usar un codigo cuando tienes mas de 1 hora de juego."
+  code: "&eTu código de referido es &a{code}"
+  his_code: "&eEl código de referido de &a{player} &ees &a{code}"
+  player_referred: "&aHas referido a &e{size} &ajugadores: &e{players}"
+  use: "&7Usa &6/ref getcode &"
+  has_been_referred: "&7Has sido referido por un jugador? Usa &6/ref <code> &7para obtener tu recompensa."
+  new_referral: "&aFelicitaciones, &7el jugador &6{player} &7ha sido referido por ti!. Cuando juege por mas de 30 min, obtendras tus recompensas, ve discord para mas detalles."
+  on_use: "&aHas utilizado el código de referido de &e{player}"
+  help:
+  - "&6Sistema de referidos"
+  - "&7Usa &e/ref <getcode> &7Para obtener tu código de referido."
+  - "&7Usa &e/ref <code> &7Para introducir un código de referido Ej: &e/ref AMO1456"
+  - "&7Usa &e/ref <list> &7Para ver cuántos referidos tienes."
+  - "&7Unete a /discord para mas informacion sobre la recompensas y tokens."
 
 crates:
   no_longer_exists: "&cEsta caja ya no existe."
   use_crate_to_open: "&cUsa una caja para abrirla."
   need_key: "&cNecesitas una llave para abrir esta caja."
   opening: "&eAbriendo..."
-  got_item: "&a¡Has conseguido &e{item}&a!"
-  got_nothing: "&cNo conseguiste nada, mejor suerte la próxima vez!"
-  broadcast: "&a{player} &7abrió una &e{crate}&a! &7y consiguió &e{item}&a!"
+  got_item: "&a¡Has obtenido &e{item}&a!"
+  got_nothing: "&cNo obtuviste nada, ¡mejor suerte la próxima vez!"
+  broadcast: "&a{player} &7abrió una &e{crate}&a! &7y obtuvo &e{item}&a!"
   no_rewards: "&cNo se encontraron recompensas para esta caja."
 
+vote:
+- "&7Vota por el servidor"
+- "&7Puedes votar cada 24 horas"
+- "&aEnlace: "
+
 misc:
-  inventory_full: "&cTu inventario está lleno, soltando objetos al suelo."
+  inventory_full: "&cTu inventario está lleno, los objetos caerán al suelo."

@@ -35,6 +35,7 @@ public class RewardsCommands implements TabExecutor{
                 return true;
             }
             plugin.reloadConfig();
+            plugin.getLangManager().load();
             sender.sendMessage("§aConfig reloaded");
             return true;
         }
