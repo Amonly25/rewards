@@ -75,8 +75,10 @@ public class Playtime extends BukkitRunnable {
         }
     }
     public void compareNow(){
-        HashMap<String,Integer> map = plugin.getDataManager().getPlaytimeTop();
-        checkTopForReward(map);  
+        plugin.getDatabaseManager().getPlaytimeTopAsync(top -> {
+            checkTopForReward(top);
+        });
+
     }
     private void checkTopForReward(HashMap<String,Integer> map) {
             
@@ -117,14 +119,15 @@ public class Playtime extends BukkitRunnable {
     private HashMap<OfflinePlayer, Integer> queueRewards = new HashMap<>();
 
     public void sendTop10(Player p){
-        HashMap<String,Integer> map = plugin.getDataManager().getPlaytimeTop();
-        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
-        entryList.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
-        p.sendMessage("§6Top 10 playtime:");
-        for (int i = 0; i < Math.min(entryList.size(), 10); i++) {
-            UUID uuid = UUID.fromString(entryList.get(i).getKey());
-            OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-            p.sendMessage("§e" + (i + 1) + ". " + player.getName() + " - " + getPlaytimeFormmated(player));
-        }
+        plugin.getDatabaseManager().getPlaytimeTopAsync(top -> {
+            List<Map.Entry<String, Integer>> entryList = new ArrayList<>(top.entrySet());
+            entryList.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
+            p.sendMessage("§6Top 10 playtime:");
+            for (int i = 0; i < Math.min(entryList.size(), 10); i++) {
+                UUID uuid = UUID.fromString(entryList.get(i).getKey());
+                OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+                p.sendMessage("§e" + (i + 1) + ". " + player.getName() + " - " + getPlaytimeFormmated(player));
+            }
+        });
     }
 }

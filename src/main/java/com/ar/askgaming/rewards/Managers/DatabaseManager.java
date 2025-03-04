@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class DatabaseManager {
 
+    private Connection connection;
     private final String databaseType;
     private final String databaseUrl;
     private final String username;
@@ -48,14 +50,37 @@ public class DatabaseManager {
             playerCache.put(p.getUniqueId(), loadPlayerData(p.getUniqueId()));
         }
     }
-    public Connection connect() throws SQLException {
-        switch (databaseType) {
+    public void connect() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            return; // Ya hay una conexión abierta
+        }
+
+        switch (databaseType.toUpperCase()) {
             case "SQLITE":
-                return DriverManager.getConnection("jdbc:sqlite:" + databaseUrl);
+                connection = DriverManager.getConnection("jdbc:sqlite:" + databaseUrl);
+                break;
             case "MYSQL":
-                return DriverManager.getConnection("jdbc:mysql://" + databaseUrl, username, password);
+                connection = DriverManager.getConnection("jdbc:mysql://" + databaseUrl, username, password);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown database type: " + databaseType);
+        }
+    }
+
+    public Connection getConnection() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connect(); // Reabrir si está cerrada
+        }
+        return connection;
+    }
+
+    public void disconnect() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
     public void createTable(){
@@ -99,7 +124,7 @@ public class DatabaseManager {
                 throw new IllegalArgumentException("Unknown database type: " + databaseType);
         }
         
-        try (Connection conn = connect();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.execute();
         } catch (SQLException e) {
@@ -113,7 +138,7 @@ public class DatabaseManager {
         }
 
         String sql = "SELECT * FROM rewards_data WHERE uuid = ?;";
-        try (Connection conn = connect();
+        try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
             try (ResultSet rs = stmt.executeQuery()) {
@@ -164,7 +189,7 @@ public class DatabaseManager {
             default:
                 break;
         }
-        try (Connection conn = connect();
+        try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, uuid.toString());
             stmt.executeUpdate();
@@ -195,7 +220,7 @@ public class DatabaseManager {
                 throw new IllegalArgumentException("Unknown database type: " + databaseType);
         }
         
-        try (Connection conn = connect();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.execute();
         } catch (SQLException e) {
@@ -207,5 +232,26 @@ public class DatabaseManager {
     }
     public String getDatabaseType() {
         return databaseType;
+    }
+    public void getPlaytimeTopAsync(final Consumer<HashMap<String, Integer>> callback) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            HashMap<String, Integer> top = new HashMap<>();
+            String query = "SELECT uuid, playtime FROM rewards_data";  // Sin ordenar por SQL
+    
+            try (PreparedStatement stmt = getConnection().prepareStatement(query);
+                 ResultSet rs = stmt.executeQuery()) {
+    
+                while (rs.next()) {
+                    String uuid = rs.getString("uuid");
+                    int playtime = rs.getInt("playtime");
+                    top.put(uuid, playtime);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+    
+            // Cuando se complete la consulta, ejecutar el callback en el hilo principal
+            Bukkit.getScheduler().runTask(plugin, () -> callback.accept(top));
+        });
     }
 }

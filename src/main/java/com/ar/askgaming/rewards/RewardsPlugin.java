@@ -46,7 +46,7 @@ public class RewardsPlugin extends JavaPlugin {
 
         databaseManager = new DatabaseManager(this);
 
-        try (Connection conn = databaseManager.connect()) {
+        try (Connection conn = databaseManager.getConnection()) {
             getLogger().info("Connected to database.");
             databaseManager.createTable();
             databaseManager.createRefferalsCodeTable();
@@ -102,6 +102,7 @@ public class RewardsPlugin extends JavaPlugin {
                 crate.getItemDisplay().remove();
             }
         });
+        getDatabaseManager().disconnect();
     }
     public AuthMeApi getAuthMeApi() {
         return authMeApi;

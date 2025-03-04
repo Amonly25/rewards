@@ -62,7 +62,8 @@ public class Commands implements TabExecutor{
                 addBuy(sender, args);
                 break;
             case "help":
-                getLang("referrals.help", (sender instanceof Player) ? (Player) sender : null);
+                String text = getLang("referral.help", (sender instanceof Player) ? (Player) sender : null);
+                sender.sendMessage(text);
                 break;
             default:
                 addReferral(sender, args);
@@ -72,7 +73,7 @@ public class Commands implements TabExecutor{
     }
     //#region addReferral
     private void addReferral(CommandSender sender, String[] args) {
-        if (args.length < 1) {
+        if (args.length != 1) {
             sender.sendMessage("Usage: /referral <code>");
             return;
         }
@@ -93,7 +94,7 @@ public class Commands implements TabExecutor{
 
         }
 
-        if (!plugin.getReferrals().existsCode(code)) {
+        if (plugin.getReferrals().getReferredBy(code) == null) {
             sender.sendMessage(getLang("referral.code_not_found", player));
             return;
         }
@@ -120,7 +121,8 @@ public class Commands implements TabExecutor{
             String code = pData.getReferralCode();
             if (code == null || code.isBlank()) {
                 manager.createReferralCode(player);
-                code = manager.getRefferalCode(player);
+                player.sendMessage(getLang("referral.creating_code", player));
+                return;
             }
             sender.sendMessage(getLang("referral.code", player).replace("{code}", code));
             return;
@@ -140,7 +142,7 @@ public class Commands implements TabExecutor{
             return;
         }
 
-        if (!plugin.getReferrals().existsCode(args[2])) {
+        if (plugin.getReferrals().getReferredBy(args[2]) == null) {
             sender.sendMessage("§cCode does not exist");
             return;
         }

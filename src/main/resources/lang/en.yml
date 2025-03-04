@@ -12,6 +12,7 @@ playtime:
   get: "&7Your playtime is &e{hours}h {minutes}m."
 
 referral:
+  creating_code: "&aCreating your referral code..."
   cant_refer_yourself: "&cYou can't refer yourself."
   already_referred: "&cYou have already entered a referral code."
   code_not_found: "&cReferral code not found."

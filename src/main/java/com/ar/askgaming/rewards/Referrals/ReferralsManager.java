@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -42,20 +43,60 @@ public class ReferralsManager extends BukkitRunnable{
     private String getLang(String key, Player player) {
         return plugin.getLangManager().getFrom(key, player);
     }
-    //#region Create code
+
     public void createReferralCode(Player player) {
-
-        String code;
-        do {
-            String subString = player.getName().substring(0, Math.min(3, player.getName().length())).toUpperCase();
-            int randomNumber = 1000 + random.nextInt(9000);
-            code = subString + randomNumber;
-        } while (existsCode(code)); // Sigue generando mientras el código ya exista.
-
-        RewardsPlayerData data = getData(player.getUniqueId());
-        data.setReferralCode(code);
-        addCodeToDatabase(player.getUniqueId(), code);
-        data.save();
+        createReferralCode(player, 5); // Máximo 5 intentos para evitar bucles infinitos
+    }
+    
+    private void createReferralCode(Player player, int attemptsLeft) {
+        if (attemptsLeft <= 0) {
+            player.sendMessage(getLang("referral.code_not_found", player));
+            return;
+        }
+    
+        String subString = player.getName().substring(0, Math.min(3, player.getName().length())).toUpperCase();
+        int randomNumber = 1000 + random.nextInt(9000);
+        String code = subString + randomNumber;
+    
+        getReferredByAsync(code, referredBy -> {
+            if (referredBy != null) {
+                // Si el código ya existe, intentar con otro
+                createReferralCode(player, attemptsLeft - 1);
+                return;
+            }
+    
+            // Código único encontrado, proceder con la asignación
+            RewardsPlayerData data = getData(player.getUniqueId());
+            data.setReferralCode(code);
+            addCodeToDatabase(player.getUniqueId(), code);
+            data.save();
+    
+            player.sendMessage(getLang("referral.code_created", player).replace("{code}", code));
+        });
+    }
+    
+    public void getReferredByAsync(String code, Consumer<OfflinePlayer> callback) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            String query = "SELECT uuid FROM refferals_codes WHERE code = ?;";
+            OfflinePlayer referredBy = null;
+            try (Connection conn = plugin.getDatabaseManager().getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, code);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    UUID uuid = UUID.fromString(rs.getString("uuid"));
+                    referredBy = Bukkit.getOfflinePlayer(uuid);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    
+            // Llamar al callback en el hilo principal
+            final OfflinePlayer finalReferredBy = referredBy;
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                callback.accept(finalReferredBy); // Usar el resultado en el hilo principal
+            });
+        });
     }
     //#region Get code
     public String getRefferalCode(Player player) {
@@ -76,18 +117,7 @@ public class ReferralsManager extends BukkitRunnable{
         return code;
         
     }
-    //#region Exists code
-    public boolean existsCode(String code) {
-        String query = "SELECT 1 FROM refferals_codes WHERE code = ? LIMIT 1;";
-        try (PreparedStatement stmt = plugin.getDatabaseManager().connect().prepareStatement(query)) {
-            stmt.setString(1, code);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next(); // Si hay algún resultado, el código existe
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false; // Error o código no encontrado
-    }
+
     //#region On Join
     public void sendMessage(Player p) {
         // is first join?
@@ -120,6 +150,20 @@ public class ReferralsManager extends BukkitRunnable{
             sender.sendMessage(getLang("referral.code_not_found", sender));
             return;
         }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("AuthMe")) {
+            // El plugin está instalado, puedes llamar a su API
+            if (plugin.getAuthMeApi() != null) {
+                String senderIp = plugin.getAuthMeApi().getLastIp(sender.getName());
+                String referrerIp = plugin.getAuthMeApi().getLastIp(referrer.getName());
+                if (senderIp.equals(referrerIp)) {
+                    sender.sendMessage(getLang("referral.cant_refer_yourself", sender));
+                    return;
+                }
+            }
+        }
+
+
         RewardsPlayerData referrerData = getData(referrer.getUniqueId());
         List<String> referredPlayers = referrerData.getReferredPlayers();
         if (!referredPlayers.contains(sender.getName())) {
@@ -129,7 +173,7 @@ public class ReferralsManager extends BukkitRunnable{
             addCodeUseToDatabase(referrer.getUniqueId());
             Player playerOnline = referrer.getPlayer();
             if (playerOnline != null) {
-                playerOnline.sendMessage(getLang("referral.new_referral", playerOnline));
+                playerOnline.sendMessage(getLang("referral.new_referral", playerOnline).replace("{player}", sender.getName()));
             }
         }
 
@@ -146,7 +190,8 @@ public class ReferralsManager extends BukkitRunnable{
     //#region Get referred by
     public OfflinePlayer getReferredBy(String code) {
         String query = "SELECT uuid FROM refferals_codes WHERE code = ?;";
-        try (PreparedStatement stmt = plugin.getDatabaseManager().connect().prepareStatement(query)) {
+        try (Connection conn = plugin.getDatabaseManager().getConnection();
+        PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, code);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -168,22 +213,34 @@ public class ReferralsManager extends BukkitRunnable{
 
             // Send message to player if he has not been referred
             if (messages.containsKey(p)) {
-                if (System.currentTimeMillis() - messages.get(p) < 1000*60*5) {
-                    continue;
+                if (System.currentTimeMillis() - messages.get(p) >= 1000 * 60 * 5) {
+                    messages.put(p, System.currentTimeMillis()); // Actualiza el tiempo del último mensaje
+                    sendMessage(p);
                 }
-            } else{
+            } else {
                 messages.put(p, System.currentTimeMillis());
                 sendMessage(p);
             }
 
             // Check if player has been referred and give reward to referrer
             RewardsPlayerData data = getData(p.getUniqueId());
-            if (data.getReferredBy() == null || data.getReferredBy().isEmpty()) continue;
-            if (data.isGivedRewardToReferrer()) continue;
+            if (data.getReferredBy() == null || data.getReferredBy().isEmpty()) {
+                //plugin.getLogger().info("Player " + p.getName() + " has not been referred.");
+                continue;
+            }
+            plugin.getLogger().info("Player " + p.getName() + " has been referred by " + data.getReferredBy());
+            if (data.isGivedRewardToReferrer()){
+                plugin.getLogger().info("Player " + p.getName() + " has already given reward to referrer.");
+                continue;
+            }
 
             int playtime = plugin.getPlaytimeManager().getPlaytimeMinutes(p);
-            if (playtime < max_minutes) continue;
+            if (playtime < max_minutes){
+                plugin.getLogger().info("Player " + p.getName() + " has not reached the required playtime to give reward to referrer.");
+                continue;
+            }
 
+            plugin.getLogger().info("Player " + p.getName() + " has been referred by " + data.getReferredBy() + ", giving reward to referrer.");
             giveRewardToReferrer(data.getReferredBy());
             data.setGivedRewardToReferrer(true);
             data.save();
@@ -234,6 +291,7 @@ public class ReferralsManager extends BukkitRunnable{
         plugin.getLogger().info(target.getName() + " has been referred by " + refferedBy + ", processing command.");
         giveBuyReward(refferedBy, amount);
     }
+    //#region onBuy
     public void giveBuyReward(String target, int amount) {
 
         List<String> commands = plugin.getConfig().getStringList("referral.rewards.on_buy_commands.commands");
@@ -246,13 +304,15 @@ public class ReferralsManager extends BukkitRunnable{
         }
         Player p = plugin.getServer().getPlayer(target);
         if (p != null) {
-            p.sendMessage(message);
+            p.sendMessage(message.replace('6', '§').replace("%amount%", amount+""));
         }
     }
+    //#region Database
     public void addCodeToDatabase(UUID uuid, String code) {
-        String sql = "INSERT OR REPLACE INTO refferals_codes (uuid, code, uses) VALUES (?, ?, 0);";
+        String sql = "INSERT INTO refferals_codes (uuid, code, uses) VALUES (?, ?, 0) " +
+        "ON DUPLICATE KEY UPDATE code = VALUES(code), uses = 0;";
 
-        try (Connection conn = plugin.getDatabaseManager().connect();
+        try (Connection conn = plugin.getDatabaseManager().getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, uuid.toString());
@@ -265,7 +325,7 @@ public class ReferralsManager extends BukkitRunnable{
     public void addCodeUseToDatabase(UUID referrer) {
         String sql = "UPDATE refferals_codes SET uses = uses + 1 WHERE uuid = ?";
 
-        try (Connection conn = plugin.getDatabaseManager().connect();
+        try (Connection conn = plugin.getDatabaseManager().getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, referrer.toString());

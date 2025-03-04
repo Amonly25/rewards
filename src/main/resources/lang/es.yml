@@ -12,7 +12,7 @@ playtime:
   get: "&7Tu tiempo de juego es de &e{hours}h {minutes}m."
 
 referral:
-
+  creating_code: "&aCreando tu código de referido..."
   cant_refer_yourself: "&cNo puedes referirte a ti mismo."
   already_referred: "&cYa has introducido un código de referido."
   code_not_found: "&cNo se ha encontrado el código de referido."

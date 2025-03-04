@@ -162,7 +162,7 @@ referral:
   #The referrer will receive the reward anyway.
   rewards:
     to_referrer:
-      message: "Thanks for referring a new player! You will receive: " #this message will be sended to the player
+      message: "Thanks for referring a new player! %player% You will receive: something of %amount%" #this message will be sended to the player
       commands:
       - eco give %player% 5
       # add tokens or something especial

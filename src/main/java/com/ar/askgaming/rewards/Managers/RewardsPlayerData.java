@@ -113,7 +113,7 @@ public class RewardsPlayerData {
                      "referredPlayers = ?, referredBy = ?, hasClaimedReferral = ?, givedRewardToReferrer = ? " +
                      "WHERE uuid = ?";
     
-        try (Connection con = plugin.getDatabaseManager().connect();
+        try (Connection con = plugin.getDatabaseManager().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
     
             stmt.setLong(1, lastDailyClaim);
