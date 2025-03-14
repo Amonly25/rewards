@@ -102,6 +102,7 @@ public class RewardsPlugin extends JavaPlugin {
                 crate.getItemDisplay().remove();
             }
         });
+        getServer().getScheduler().cancelTasks(this);
         getDatabaseManager().disconnect();
     }
     public AuthMeApi getAuthMeApi() {
