@@ -9,7 +9,7 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class BlockBreakListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public BlockBreakListener(RewardsPlugin plugin){
         this.plugin = plugin;
     }

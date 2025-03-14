@@ -20,7 +20,9 @@ import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
 
 public class Playtime extends BukkitRunnable {
 
-    private RewardsPlugin plugin;
+    private HashMap<OfflinePlayer, Integer> queueRewards = new HashMap<>();
+
+    private final RewardsPlugin plugin;
 
     public Playtime(RewardsPlugin plugin) {
         this.plugin = plugin;
@@ -116,7 +118,6 @@ public class Playtime extends BukkitRunnable {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
         }
     }
-    private HashMap<OfflinePlayer, Integer> queueRewards = new HashMap<>();
 
     public void sendTop10(Player p){
         plugin.getDatabaseManager().getPlaytimeTopAsync(top -> {

@@ -15,7 +15,7 @@ public class LangManager {
     private File defaultLang;
     private HashMap<String, HashMap<String, String>> cache = new HashMap<>();
     
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public LangManager(RewardsPlugin plugin){
         this.plugin = plugin;
 

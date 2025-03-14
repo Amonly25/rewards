@@ -8,16 +8,25 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ar.askgaming.rewards.Crates.Crate;
 import com.ar.askgaming.rewards.Crates.CrateManager;
-import com.ar.askgaming.rewards.Listeners.*;
-import com.ar.askgaming.rewards.Listeners.PlayerListeners.*;
-import com.ar.askgaming.rewards.Managers.DataManager;
+import com.ar.askgaming.rewards.Listeners.CloseInventoryListener;
+import com.ar.askgaming.rewards.Listeners.CreatureSpawnListener;
+import com.ar.askgaming.rewards.Listeners.EntityDismountListener;
+import com.ar.askgaming.rewards.Listeners.EntityPortalListener;
+import com.ar.askgaming.rewards.Listeners.InventoryClickListener;
+import com.ar.askgaming.rewards.Listeners.OpenInventoryListener;
+import com.ar.askgaming.rewards.Listeners.PickUpItemListener;
+import com.ar.askgaming.rewards.Listeners.PlayerListeners.BlockBreakListener;
+import com.ar.askgaming.rewards.Listeners.PlayerListeners.PlaceBlockListener;
+import com.ar.askgaming.rewards.Listeners.PlayerListeners.PlayerInteractListener;
+import com.ar.askgaming.rewards.Listeners.PlayerListeners.PlayerJoinListener;
+import com.ar.askgaming.rewards.Listeners.PlayerListeners.PlayerLoginListener;
 import com.ar.askgaming.rewards.Managers.DatabaseManager;
 import com.ar.askgaming.rewards.Managers.LangManager;
-import com.ar.askgaming.rewards.Managers.PlayerData;
 import com.ar.askgaming.rewards.Playtime.Playtime;
 import com.ar.askgaming.rewards.Referrals.ReferralsManager;
 import com.ar.askgaming.rewards.Timed.Daily;
 import com.ar.askgaming.rewards.Timed.StreakConnection;
+import com.ar.askgaming.rewards.Utils.PlaceHolders;
 import com.ar.askgaming.rewards.Vote.VoteListener;
 
 import fr.xephi.authme.api.v3.AuthMeApi;
@@ -26,7 +35,6 @@ public class RewardsPlugin extends JavaPlugin {
     
     private CrateManager crateManager;
     private LangManager langManager;
-    private DataManager dataManager;
     private Daily dailyReward;
     private StreakConnection streakConnection;
     private RewardsGui rewardsGui;
@@ -42,7 +50,6 @@ public class RewardsPlugin extends JavaPlugin {
         saveDefaultConfig();
         
         ConfigurationSerialization.registerClass(Crate.class,"Crate");
-        ConfigurationSerialization.registerClass(PlayerData.class,"PlayerData");
 
         databaseManager = new DatabaseManager(this);
 
@@ -59,7 +66,6 @@ public class RewardsPlugin extends JavaPlugin {
         crateManager = new CrateManager(this);
         langManager = new LangManager(this);
         rewardsGui = new RewardsGui(this);
-        dataManager = new DataManager(this);
         dailyReward = new Daily(this);
         streakConnection = new StreakConnection(this);
         referrals = new ReferralsManager(this);
@@ -87,6 +93,9 @@ public class RewardsPlugin extends JavaPlugin {
         if (getServer().getPluginManager().getPlugin("AuthMe") != null) {
             authMeApi = AuthMeApi.getInstance();
             new PlayerLoginListener(this);
+        }
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceHolders(this).register();
         }
     }
 
@@ -120,17 +129,12 @@ public class RewardsPlugin extends JavaPlugin {
     public RewardsGui getRewardsGui() {
         return rewardsGui;
     }
-
-    public DataManager getDataManager() {
-        return dataManager;
-    }
     public StreakConnection getStreakConnection() {
         return streakConnection;
     }
     public ReferralsManager getReferrals() {
         return referrals;
     }
-
     public Daily getDailyReward() {
         return dailyReward;
     }
@@ -143,5 +147,4 @@ public class RewardsPlugin extends JavaPlugin {
     public void setRewardsGui(RewardsGui rewardsGui) {
         this.rewardsGui = rewardsGui;
     }
-
 }

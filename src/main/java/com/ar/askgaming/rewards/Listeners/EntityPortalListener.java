@@ -11,12 +11,13 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class EntityPortalListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public EntityPortalListener(RewardsPlugin plugin) {
         this.plugin = plugin;
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
+    
     @EventHandler
     public void onEntityPortal(EntityPortalEvent event) {
         Entity entity = event.getEntity();

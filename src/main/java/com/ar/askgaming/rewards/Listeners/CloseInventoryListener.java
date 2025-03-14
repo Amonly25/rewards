@@ -15,10 +15,11 @@ import com.ar.askgaming.rewards.Crates.Crate;
 
 public class CloseInventoryListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public CloseInventoryListener(RewardsPlugin plugin){
         this.plugin = plugin;
     }
+    
     @EventHandler
     public void closeInventory(InventoryCloseEvent e){
         Player p = (Player) e.getPlayer();
@@ -40,5 +41,4 @@ public class CloseInventoryListener implements Listener{
             }
         }
     }
-
 }

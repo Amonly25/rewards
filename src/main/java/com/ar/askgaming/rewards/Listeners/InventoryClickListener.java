@@ -14,12 +14,11 @@ import com.ar.askgaming.rewards.Crates.Crate;
 
 public class InventoryClickListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public InventoryClickListener(RewardsPlugin plugin){
         this.plugin = plugin;
     }
 
-    
     @EventHandler
     public void onRewardsGuid(InventoryClickEvent e){
        

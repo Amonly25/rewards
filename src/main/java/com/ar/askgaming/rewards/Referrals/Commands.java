@@ -14,8 +14,8 @@ import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
 
 public class Commands implements TabExecutor{
 
-    private ReferralsManager manager;
-    private RewardsPlugin plugin;
+    private final ReferralsManager manager;
+    private final RewardsPlugin plugin;
 
     public Commands(RewardsPlugin plugin, ReferralsManager manager) {
         this.plugin = plugin;

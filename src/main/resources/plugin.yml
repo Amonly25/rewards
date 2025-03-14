@@ -3,7 +3,7 @@ name: Rewards
 version: 1.4
 api-version: 1.21
 author: AskGaming
-soft-depend: [VotifierPlus]
+soft-depend: [VotifierPlus, PlaceholderAPI]
 commands:
   rewards:
     description: Shows the rewards

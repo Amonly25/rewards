@@ -19,6 +19,10 @@ public class StreakConnection {
     public StreakConnection(RewardsPlugin plugin){
         this.plugin = plugin;
     }
+
+    private DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy");
+
+	//#region process
     public void process(Player p){
         RewardsPlayerData pData = plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
 
@@ -68,8 +72,6 @@ public class StreakConnection {
 			pData.save();
 		}	
     }
-
-    private DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy");
 	
 	public String getToday() {	
 		
@@ -108,6 +110,4 @@ public class StreakConnection {
 		}
 		return false;
 	}
-    
-
 }

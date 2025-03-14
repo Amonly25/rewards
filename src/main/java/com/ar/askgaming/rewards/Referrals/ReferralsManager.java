@@ -22,8 +22,8 @@ import com.ar.askgaming.rewards.Managers.RewardsPlayerData;
 
 public class ReferralsManager extends BukkitRunnable{
 
-    private RewardsPlugin plugin;
-    private DatabaseManager databaseManager;
+    private final RewardsPlugin plugin;
+    private final DatabaseManager databaseManager;
 
     public ReferralsManager(RewardsPlugin plugin) {
         this.plugin = plugin;
@@ -162,7 +162,6 @@ public class ReferralsManager extends BukkitRunnable{
                 }
             }
         }
-
 
         RewardsPlayerData referrerData = getData(referrer.getUniqueId());
         List<String> referredPlayers = referrerData.getReferredPlayers();
