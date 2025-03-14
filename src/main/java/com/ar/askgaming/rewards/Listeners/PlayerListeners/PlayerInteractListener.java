@@ -18,7 +18,7 @@ import com.ar.askgaming.rewards.Crates.Crate;
 
 public class PlayerInteractListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public PlayerInteractListener(RewardsPlugin plugin){
         this.plugin = plugin;
     }

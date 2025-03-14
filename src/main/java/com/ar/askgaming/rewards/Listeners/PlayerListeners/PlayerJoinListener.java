@@ -11,7 +11,7 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class PlayerJoinListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
 
     public PlayerJoinListener(RewardsPlugin main) {
         plugin = main;
@@ -22,7 +22,6 @@ public class PlayerJoinListener implements Listener{
         Player p = e.getPlayer();
 
         plugin.getDatabaseManager().loadPlayerData(p.getUniqueId());
-        plugin.getDataManager().convertData(p.getUniqueId());
 
         if (!p.hasPlayedBefore()){
             plugin.getReferrals().sendMessage(p);

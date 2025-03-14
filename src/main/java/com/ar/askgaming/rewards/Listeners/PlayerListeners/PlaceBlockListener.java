@@ -9,7 +9,7 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class PlaceBlockListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public PlaceBlockListener(RewardsPlugin plugin){
         this.plugin = plugin;
     }

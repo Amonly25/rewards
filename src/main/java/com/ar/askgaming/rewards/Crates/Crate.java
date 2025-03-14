@@ -47,18 +47,19 @@ public class Crate implements ConfigurationSerializable {
         this.openFromInventory = true;
         this.blockLinked = null;
         this.openByBlock = false;
-        setDefaultKey();
         this.rewards = new ItemStack[0];
         this.textDisplay = null;
         this.itemDisplay = null;
         this.broadcastReward = true;
         this.displayText = "§6" + name + " Crate";
 
+        setDefaultKey();
+
     }
     public Crate(Map<String, Object> map) {
+
         this.name = (String) map.get("name");
         this.openCost = ((Number) map.get("openCost")).doubleValue();
-
         this.isKeyRequired = (boolean) map.get("isKeyRequired");
         this.crateItem = (ItemStack) map.get("crateItem");
         this.openFromInventory = (boolean) map.get("openFromInventory");
@@ -85,7 +86,6 @@ public class Crate implements ConfigurationSerializable {
 
         } else rewards = new ItemStack[0];
         
-
         this.broadcastReward = (boolean) map.get("broadcastReward");
 
     }
@@ -101,14 +101,15 @@ public class Crate implements ConfigurationSerializable {
         map.put("rewards", rewards);
         map.put("openFromInventory", openFromInventory);
         map.put("displayText", displayText);
+        map.put("openByBlock", openByBlock);
+        map.put("broadcastReward", broadcastReward);
 
         if (blockLinked != null) {
             map.put("blockLinked", blockLinked.getLocation());
         } else {
             map.put("blockLinked", null);
         }
-        map.put("openByBlock", openByBlock);
-        map.put("broadcastReward", broadcastReward);
+
         return map;
     }
     //#region defaultKey

@@ -50,10 +50,7 @@ public class DatabaseManager {
             playerCache.put(p.getUniqueId(), loadPlayerData(p.getUniqueId()));
         }
     }
-    public void connect() throws SQLException {
-        if (connection != null && !connection.isClosed()) {
-            return; // Ya hay una conexión abierta
-        }
+    private void newConnection() throws SQLException {
 
         switch (databaseType.toUpperCase()) {
             case "SQLITE":
@@ -69,7 +66,7 @@ public class DatabaseManager {
 
     public Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
-            connect(); // Reabrir si está cerrada
+            newConnection(); // Re connect if connection is closed
         }
         return connection;
     }

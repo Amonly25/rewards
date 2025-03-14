@@ -10,7 +10,7 @@ import fr.xephi.authme.events.LoginEvent;
 
 public class PlayerLoginListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public PlayerLoginListener(RewardsPlugin main) {
         plugin = main;
 

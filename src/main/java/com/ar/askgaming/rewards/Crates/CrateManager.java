@@ -34,22 +34,11 @@ public class CrateManager {
     private File file;
     private FileConfiguration config;
     private Inventory gui;
-
-    public Inventory getGui() {
-        return gui;
-    }
-
     private NamespacedKey key;
 
-    public NamespacedKey getKey() {
-        return key;
-    }
-
     private HashMap<String, Inventory> editing = new HashMap<>();
+    private HashMap<String, Crate> crates = new HashMap<>();
 
-    public HashMap<String, Inventory> getEditing() {
-        return editing;
-    }
     public CrateManager(RewardsPlugin plugin) {
 
         new CrateCommands(plugin);
@@ -58,20 +47,13 @@ public class CrateManager {
         key = new NamespacedKey(plugin, "ask_crate");
         //Create File and load config
         file = new File(plugin.getDataFolder(), "crates.yml");
+
         if (!file.exists()) {
             plugin.saveResource("crates.yml", false);
         }
-        config = new YamlConfiguration();
-
-        try {
-            config.load(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-            plugin.getLogger().warning("Error loading crates.yml");
-            return;
-        }
+        config = YamlConfiguration.loadConfiguration(file);
         Set<String> keys = config.getKeys(false);
-        if (keys == null) return;
+        if (keys.isEmpty()) return;
 
         //Load crates from config
         for (String key : keys) {
@@ -123,16 +105,6 @@ public class CrateManager {
             e.printStackTrace();
             plugin.getLogger().warning("Error saving crate: " + crate.getName());
         }
-    }
-
-    HashMap<String, Crate> crates = new HashMap<>();
-
-    public HashMap<String, Crate> getCrates() {
-        return crates;
-    }
-
-    public void setCrates(HashMap<String, Crate> crates) {
-        this.crates = crates;
     }
     //#region AddCrateToGui
     public void addCrateToGui(Crate crate){
@@ -242,9 +214,7 @@ public class CrateManager {
             p.sendMessage(plugin.getLangManager().getFrom("crates.got_item", p).replace("{item}", name));
         }
     }
-    public Crate getCrateByName(String name) {
-        return crates.get(name);
-    }
+
     //#region getByBlock
     public Crate getByBlock(Block block) {
         for (Crate crate : crates.values()) {
@@ -368,4 +338,22 @@ public class CrateManager {
                         new Particle.DustOptions(color, 1));
         }
     }
+    //#region getters
+    public Crate getCrateByName(String name) {
+        return crates.get(name);
+    }
+    public NamespacedKey getKey() {
+        return key;
+    }
+    public HashMap<String, Inventory> getEditing() {
+        return editing;
+    }
+    public Inventory getGui() {
+        return gui;
+    }
+    public HashMap<String, Crate> getCrates() {
+        return crates;
+    }
+
+
 }

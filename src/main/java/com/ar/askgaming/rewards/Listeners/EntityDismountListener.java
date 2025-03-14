@@ -14,7 +14,7 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class EntityDismountListener implements Listener {
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public EntityDismountListener(RewardsPlugin plugin) {
         this.plugin = plugin;
 

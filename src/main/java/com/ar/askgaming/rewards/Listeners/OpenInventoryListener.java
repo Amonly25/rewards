@@ -8,7 +8,7 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class OpenInventoryListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public OpenInventoryListener(RewardsPlugin plugin){
         this.plugin = plugin;
     }

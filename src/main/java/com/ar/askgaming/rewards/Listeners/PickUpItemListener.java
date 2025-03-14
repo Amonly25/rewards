@@ -9,7 +9,7 @@ import com.ar.askgaming.rewards.RewardsPlugin;
 
 public class PickUpItemListener implements Listener{
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     public PickUpItemListener(RewardsPlugin plugin) {
         this.plugin = plugin;
     }

@@ -24,13 +24,15 @@ import net.md_5.bungee.api.ChatColor;
 
 public class CrateCommands implements TabExecutor {
 
-    private RewardsPlugin plugin;
+    private final RewardsPlugin plugin;
     private final Set<String> setValue = Set.of("key_requerid", "broadcast_reward", "cost", "block", "rewards", "remove_block", "open_from_inventory", "open_by_block", "text_display", "key_item", "crate_item");
+    
     public CrateCommands(RewardsPlugin plugin){
         this.plugin = plugin;
 
         plugin.getServer().getPluginCommand("crate").setExecutor(this);
     }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
@@ -50,11 +52,11 @@ public class CrateCommands implements TabExecutor {
         }
         Player p = (Player) sender;
 
-                switch (args[0].toLowerCase()) {
-            case "create" -> createCommand(p, args);
-            case "delete" -> deleteCommand(p, args);
-            case "set" -> setCommand(p, args);
-            case "menu" -> p.openInventory(plugin.getCrateManager().getGui());
+            switch (args[0].toLowerCase()) {
+                case "create" -> createCommand(p, args);
+                case "delete" -> deleteCommand(p, args);
+                case "set" -> setCommand(p, args);
+                case "menu" -> p.openInventory(plugin.getCrateManager().getGui());
             default -> p.sendMessage("§cUsage: /crate <create/delete/set/menu>");
         }
         return true;
