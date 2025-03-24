@@ -86,9 +86,7 @@ public class RewardsPlugin extends JavaPlugin {
         new EntityDismountListener(this);
         new EntityPortalListener(this);
 
-        if (getServer().getPluginManager().getPlugin("VotifierPlus") != null) {
-            vote = new VoteListener(this);
-        }
+        vote = new VoteListener(this);
 
         if (getServer().getPluginManager().getPlugin("AuthMe") != null) {
             authMeApi = AuthMeApi.getInstance();

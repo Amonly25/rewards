@@ -19,9 +19,11 @@ public class VoteListener implements Listener{
     private RewardsPlugin plugin;
     public VoteListener(RewardsPlugin plugin){
         this.plugin = plugin;
-
         new Commands(plugin);
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+
+        if (plugin.getServer().getPluginManager().getPlugin("VotifierPlus") != null) {
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        }
     }
 
     private HashMap<String, Integer> queueVotes = new HashMap<>();

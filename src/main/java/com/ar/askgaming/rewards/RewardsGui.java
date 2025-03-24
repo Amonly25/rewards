@@ -53,7 +53,7 @@ public class RewardsGui {
         }
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
-        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+        meta.addItemFlags(ItemFlag.values());
         meta.setDisplayName(colorize(plugin.getConfig().getString("gui." + key + ".name", key + " Reward")));
         List<String> lore = plugin.getConfig().getStringList("gui." + key + ".lore");
         List<String> newLore = new ArrayList<>();

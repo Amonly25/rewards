@@ -16,6 +16,7 @@ referral:
   cant_refer_yourself: "&cYou can't refer yourself."
   already_referred: "&cYou have already entered a referral code."
   code_not_found: "&cReferral code not found."
+  code_created: "&aReferral code created: &e{code}"
   cant_use: "&cYou can't use a code when you have more than 1 hour of playtime."
   code: "&eYour referral code is &a{code}"
   his_code: "&eThe referral code of &a{player} &eis &a{code}"
@@ -42,9 +43,8 @@ crates:
   no_rewards: "&cNo rewards found for this crate."
 
 vote:
-- "&7Vote for the server"
-- "&7You can vote every 24 hours"
-- "&aLink: "
-
+  vote: "&7Vote for the server and get rewards, you can vote every 24 hours."
+  link: "&aLink "
+  #add the list of the link in the config.yml
 misc:
   inventory_full: "&cYour inventory is full, items will drop to the ground."

@@ -48,6 +48,12 @@ public class CrateManager {
         //Create File and load config
         file = new File(plugin.getDataFolder(), "crates.yml");
 
+        //Create inventory and insert crates
+        gui = plugin.getServer().createInventory(null, 27, "Crates");
+
+        loadCrates();
+    }
+    public void loadCrates(){
         if (!file.exists()) {
             plugin.saveResource("crates.yml", false);
         }
@@ -57,15 +63,19 @@ public class CrateManager {
 
         //Load crates from config
         for (String key : keys) {
-            Object obj = config.get(key);
-            if (obj instanceof Crate) {
-                Crate crate = (Crate) obj;
-                crates.put(key, crate);
+            try {
+                Object obj = config.get(key);
+                if (obj instanceof Crate) {
+                    Crate crate = (Crate) obj;
+                    crates.put(key, crate);
+                } else {
+                    plugin.getLogger().warning("Error loading crate '" + key + "': Invalid crate object, skipping...");
+                }
+            } catch (Exception e) {
+                plugin.getLogger().severe("Error loading crate '" + key + "': " + e.getMessage());
+                e.printStackTrace();
             }
         }
-
-        //Create inventory and insert crates
-        gui = plugin.getServer().createInventory(null, 27, "Crates");
     }
     //#region Create
     public boolean createCrate(String name, ItemStack crate){
@@ -334,7 +344,7 @@ public class CrateManager {
             double z = center.getZ() + radius * Math.cos(phi);
 
             Location particleLocation = new Location(world, x, y, z);
-            world.spawnParticle(Particle.DUST, particleLocation, 1, 0, 0, 0, 0, 
+            world.spawnParticle(Particle.REDSTONE, particleLocation, 1, 0, 0, 0, 0, 
                         new Particle.DustOptions(color, 1));
         }
     }

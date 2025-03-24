@@ -38,7 +38,7 @@ public class CreatureSpawnListener implements Listener{
                 for (String key : section.getKeys(false)) {
                     Crate crate = plugin.getCrateManager().getCrateByName(key);
                     if (crate == null) {
-                        plugin.getLogger().warning("Crate " + key + " not found in CrateManager.");
+                        //plugin.getLogger().warning("Crate " + key + " not found in CrateManager.");
                         continue;
                     }
 

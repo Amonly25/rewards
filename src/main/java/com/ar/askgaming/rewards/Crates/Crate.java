@@ -36,7 +36,7 @@ public class Crate implements ConfigurationSerializable {
             crateItem = new ItemStack(Material.CHEST);
             ItemMeta meta = crateItem.getItemMeta();
             meta.setDisplayName("§6" + name+" Crate");
-            meta.setEnchantmentGlintOverride(true);
+
             crateItem.setItemMeta(meta);
 
         } else crateItem = item;
@@ -117,7 +117,7 @@ public class Crate implements ConfigurationSerializable {
         keyItem = new ItemStack(Material.TRIPWIRE_HOOK);
         ItemMeta meta = keyItem.getItemMeta();
         meta.setDisplayName("§6" + name+" Key");
-        meta.setEnchantmentGlintOverride(true);
+
         keyItem.setItemMeta(meta);
         return keyItem;
     }
@@ -127,10 +127,11 @@ public class Crate implements ConfigurationSerializable {
             return;
         }
         if (textDisplay != null) {
-            textDisplay.teleport(blockLinked.getLocation().add(0.5, 1.2, 0.5));
-            return;
+            textDisplay.remove();
         }
+        
         textDisplay = blockLinked.getWorld().spawn(blockLinked.getLocation().add(0.5, 1, 0.5), TextDisplay.class);
+
         String name;
         if (displayText != null) {
             name = displayText;

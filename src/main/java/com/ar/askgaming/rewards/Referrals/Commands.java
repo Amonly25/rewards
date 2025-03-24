@@ -120,8 +120,8 @@ public class Commands implements TabExecutor{
 
             String code = pData.getReferralCode();
             if (code == null || code.isBlank()) {
-                manager.createReferralCode(player);
                 player.sendMessage(getLang("referral.creating_code", player));
+                manager.createReferralCode(player);
                 return;
             }
             sender.sendMessage(getLang("referral.code", player).replace("{code}", code));

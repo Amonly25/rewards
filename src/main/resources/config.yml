@@ -109,6 +109,11 @@ streak_connection:
     #   - eco give %player% 2800    
 
 # Vote rewards
+vote_links:
+  - "https://servidoresdeminecraft.es/server/vote/RMDJhxrL/mc.askgaming.net"
+  - "https://minecraft-mp.com/server/340929/vote/"
+  - "https://www.40servidoresmc.es/ask-gaming-votar"
+  
 vote:
   rewards:
     1: #Example

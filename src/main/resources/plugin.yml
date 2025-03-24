@@ -1,7 +1,7 @@
 main: com.ar.askgaming.rewards.RewardsPlugin
 name: Rewards
 version: 1.5
-api-version: 1.21
+api-version: 1.20
 author: AskGaming
 soft-depend: [VotifierPlus, PlaceholderAPI]
 commands:

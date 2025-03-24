@@ -18,6 +18,7 @@ referral:
   code_not_found: "&cNo se ha encontrado el código de referido."
   cant_use: "&cNo puedes usar un codigo cuando tienes mas de 1 hora de juego."
   code: "&eTu código de referido es &a{code}"
+  code_created: "&aCódigo de referido creado: &e{code}"
   his_code: "&eEl código de referido de &a{player} &ees &a{code}"
   player_referred: "&aHas referido a &e{size} &ajugadores: &e{players}"
   use: "&7Usa &6/ref getcode &"
@@ -42,9 +43,9 @@ crates:
   no_rewards: "&cNo se encontraron recompensas para esta caja."
 
 vote:
-- "&7Vota por el servidor"
-- "&7Puedes votar cada 24 horas"
-- "&aEnlace: "
+  vote: "&7Vota por el servidor y obtén recompensas, podrás votar cada 24 horas."
+  link: "&aLink "
+  # añade la lista de los enlaces en config.yml
 
 misc:
   inventory_full: "&cTu inventario está lleno, los objetos caerán al suelo."
