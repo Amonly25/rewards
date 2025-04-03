@@ -23,11 +23,16 @@ public class CloseInventoryListener implements Listener{
     @EventHandler
     public void closeInventory(InventoryCloseEvent e){
         Player p = (Player) e.getPlayer();
+
         Inventory inv = e.getInventory();
         Iterator<Map.Entry<String, Inventory>> iterator = plugin.getCrateManager().getEditing().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Inventory> entry = iterator.next();
             if (entry.getValue().equals(inv)) {
+                if (!p.hasPermission("rewards.crate.admin")){
+                    iterator.remove();
+                    return;
+                }
                 Crate crate = plugin.getCrateManager().getCrateByName(entry.getKey());
                 if (crate == null) {
                     iterator.remove();

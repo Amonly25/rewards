@@ -94,4 +94,21 @@ public class InventoryClickListener implements Listener{
             return;
         }
     }
+    @EventHandler
+    public void onPreviewCrate(InventoryClickEvent e){
+
+        Inventory upper = e.getInventory();
+        if (!(e.getWhoClicked() instanceof Player)) {
+            return;
+        }
+        Player p = (Player) e.getWhoClicked();
+
+        for (Inventory check : plugin.getCrateManager().getEditing().values()){
+            if (check.equals(upper)){
+                if (!p.hasPermission("rewards.crate.admin")){
+                    e.setCancelled(true);
+                }
+            }
+        }
+    }
 }

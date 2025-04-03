@@ -17,19 +17,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class Crate implements ConfigurationSerializable {
 
-    private String name;
+    private String name, displayText;
     private double openCost;
-    private boolean isKeyRequired;
-    private ItemStack crateItem;
-    private boolean openFromInventory;
+    private Boolean isKeyRequired, openByBlock, broadcastReward, openFromInventory;
+    private ItemStack crateItem, keyItem;
     private Block blockLinked;
-    private boolean openByBlock;
-    private ItemStack keyItem;
     private ItemStack[] rewards;
     private TextDisplay textDisplay;
-    private String displayText;
     private ItemDisplay itemDisplay;
-    private boolean broadcastReward;
 
     public Crate (String name, ItemStack item){
         if (item == null) {

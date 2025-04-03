@@ -1,0 +1,51 @@
+daily:
+  cant_claim_yet: "&cAnda belum boleh menuntut ganjaran harian anda."
+  time_left: "&c{hours}j {minutes}m {seconds}s"
+  now: "&eSekarang!"
+  can_claim: "&eAnda boleh menuntut ganjaran harian anda sekarang!"
+  broadcast: "&a{player} &7telah menerima &e{item} &7sebagai ganjaran harian."
+
+streak:
+  on_join: "&7Anda mempunyai rentetan log masuk sebanyak &e{streak}!"
+
+playtime:
+  get: "&7Masa permainan anda ialah &e{hours}j {minutes}m."
+
+referral:
+  creating_code: "&aSedang mencipta kod rujukan anda..."
+  cant_refer_yourself: "&cAnda tidak boleh merujuk diri sendiri."
+  already_referred: "&cAnda telah memasukkan kod rujukan."
+  code_not_found: "&cKod rujukan tidak dijumpai."
+  code_created: "&aKod rujukan telah dicipta: &e{code}"
+  cant_use: "&cAnda tidak boleh menggunakan kod jika anda mempunyai lebih daripada 1 jam masa permainan."
+  code: "&eKod rujukan anda ialah &a{code}"
+  his_code: "&eKod rujukan bagi &a{player} &eialah &a{code}"
+  player_referred: "&aAnda telah merujuk &e{size} &apemain: &e{players}"
+  use: "&7Gunakan &6/ref getcode &"
+  has_been_referred: "&7Adakah anda telah dirujuk oleh pemain lain? Gunakan &6/ref <code> &7untuk menuntut ganjaran anda."
+  new_referral: "&aTahniah, &7pemain &6{player} &7telah dirujuk oleh anda! Setelah mereka bermain selama lebih daripada 30 minit, anda akan menerima ganjaran anda. Semak Discord untuk maklumat lanjut."
+  on_use: "&aAnda telah menggunakan kod rujukan &e{player}"
+  help:
+  - "&6Sistem Rujukan"
+  - "&7Gunakan &e/ref <getcode> &7untuk mendapatkan kod rujukan anda."
+  - "&7Gunakan &e/ref <code> &7untuk memasukkan kod rujukan. Contoh: &e/ref AMO1456"
+  - "&7Gunakan &e/ref <list> &7untuk melihat berapa banyak rujukan yang anda ada."
+  - "&7Sertai /discord untuk maklumat lanjut mengenai ganjaran dan token."
+
+crates:
+  no_longer_exists: "&cPeti ini tidak lagi wujud."
+  use_crate_to_open: "&cGunakan peti untuk membukanya."
+  need_key: "&cAnda memerlukan kunci untuk membuka peti ini, anda boleh melihat ganjaran dengan &e/crate preview <crate>"
+  opening: "&eSedang membuka..."
+  got_item: "&aAnda menerima &e{item}&a!"
+  got_nothing: "&cAnda tidak mendapat apa-apa, semoga berjaya lain kali!"
+  broadcast: "&a{player} &7membuka &e{crate}&a! &7dan menerima &e{item}&a!"
+  no_rewards: "&cTiada ganjaran ditemui untuk peti ini."
+
+vote:
+  vote: "&7Undi untuk pelayan dan dapatkan ganjaran, anda boleh mengundi setiap 24 jam."
+  link: "&aPautan "
+  #tambah senarai pautan dalam config.yml
+
+misc:
+  inventory_full: "&cInventori anda penuh, item akan jatuh ke tanah."

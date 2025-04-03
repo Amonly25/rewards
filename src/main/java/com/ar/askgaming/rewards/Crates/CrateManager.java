@@ -41,7 +41,7 @@ public class CrateManager {
 
     public CrateManager(RewardsPlugin plugin) {
 
-        new CrateCommands(plugin);
+        new CrateCommands(this);
 
         this.plugin = plugin;
         key = new NamespacedKey(plugin, "ask_crate");
@@ -90,15 +90,14 @@ public class CrateManager {
     //#region delete
     public void deleteCrate(String name){
         Crate crate = getCrateByName(name);
-        config.set(name, null);
-        crates.remove(name);
         if (crate.getTextDisplay() != null){
             crate.getTextDisplay().remove();
         }
         if (crate.getItemDisplay() != null){
             crate.getItemDisplay().remove();
         }
-        
+        config.set(name, null);
+        crates.remove(name);
         try {
             config.save(file);
         } catch (Exception e) {

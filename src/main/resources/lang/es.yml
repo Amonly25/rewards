@@ -35,7 +35,7 @@ referral:
 crates:
   no_longer_exists: "&cEsta caja ya no existe."
   use_crate_to_open: "&cUsa una caja para abrirla."
-  need_key: "&cNecesitas una llave para abrir esta caja."
+  need_key: "&cNecesitas una llave para abrir esta caja, puedes previsualizar las recompensas con &e/crate preview <crate>"
   opening: "&eAbriendo..."
   got_item: "&a¡Has obtenido &e{item}&a!"
   got_nothing: "&cNo obtuviste nada, ¡mejor suerte la próxima vez!"

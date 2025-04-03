@@ -25,10 +25,12 @@ import net.md_5.bungee.api.ChatColor;
 public class CrateCommands implements TabExecutor {
 
     private final RewardsPlugin plugin;
-    private final Set<String> setValue = Set.of("key_requerid", "broadcast_reward", "cost", "block", "rewards", "remove_block", "open_from_inventory", "open_by_block", "text_display", "key_item", "crate_item");
+    private final CrateManager manager;
+    private final Set<String> setValue = Set.of("key_requerid", "broadcast_reward", "block", "rewards", "remove_block", "open_from_inventory", "open_by_block", "text_display", "key_item", "crate_item");
     
-    public CrateCommands(RewardsPlugin plugin){
-        this.plugin = plugin;
+    public CrateCommands(CrateManager manager){
+        this.plugin = RewardsPlugin.getInstance();
+        this.manager = manager;
 
         plugin.getServer().getPluginCommand("crate").setExecutor(this);
     }
@@ -37,7 +39,7 @@ public class CrateCommands implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
         if (args.length == 0) {
-            sender.sendMessage("§cUsage: /crate <create/delete/set/menu/give>");
+            sender.sendMessage("§cUsage: /crate <create/delete/set/menu/give/preview>");
             return true;
         }
 
@@ -50,13 +52,23 @@ public class CrateCommands implements TabExecutor {
             sender.sendMessage("You must be a player to use this command.");
             return true;
         }
+
         Player p = (Player) sender;
+
+        if (args[0].equalsIgnoreCase("preview")) {
+            previewCommand(p, args);
+            return true;
+        }
+        if (!p.hasPermission("rewards.crate.admin")){
+            p.sendMessage("§cYou dont have permission to use this command.");
+            return true;
+        }
 
             switch (args[0].toLowerCase()) {
                 case "create" -> createCommand(p, args);
                 case "delete" -> deleteCommand(p, args);
                 case "set" -> setCommand(p, args);
-                case "menu" -> p.openInventory(plugin.getCrateManager().getGui());
+                case "menu" -> p.openInventory(manager.getGui());
             default -> p.sendMessage("§cUsage: /crate <create/delete/set/menu>");
         }
         return true;
@@ -64,12 +76,20 @@ public class CrateCommands implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return switch (args.length) {
-            case 1 -> List.of("create", "delete", "set", "menu", "give");
-            case 2 -> new ArrayList<>(plugin.getCrateManager().getCrates().keySet());
-            case 3 -> new ArrayList<>(setValue);
-            default -> null;
-        };
+        switch (args.length) {
+            case 1:
+                List<String> commands = new ArrayList<>(Arrays.asList("preview"));
+                if (sender.hasPermission("rewards.crate.admin")) {
+                    commands.addAll(Arrays.asList("create", "delete", "set", "menu", "give"));
+                }
+                return commands;
+            case 2:
+                return new ArrayList<>(manager.getCrates().keySet());
+            case 3:
+                return new ArrayList<>(setValue);
+            default:
+                return null;
+        }
     }
     //#region create
     public void createCommand(Player p, String[] args){
@@ -78,12 +98,12 @@ public class CrateCommands implements TabExecutor {
             return;
         }
         String name = args[1].toLowerCase();
-        if (plugin.getCrateManager().getCrates().containsKey(name)){
+        if (manager.getCrates().containsKey(name)){
             p.sendMessage("§cThis crate already exists.");
             return;
         }
         p.sendMessage("§aCrate " + name + " created.");
-        plugin.getCrateManager().createCrate(name, null);
+        manager.createCrate(name, null);
 
     }
     //#region delete
@@ -93,11 +113,11 @@ public class CrateCommands implements TabExecutor {
             return;
         }
         String name = args[1].toLowerCase();
-        if (!plugin.getCrateManager().getCrates().containsKey(name)){
+        if (!manager.getCrates().containsKey(name)){
             p.sendMessage("§cThis crate doesnt exists.");
             return;
         }
-        plugin.getCrateManager().deleteCrate(name);
+        manager.deleteCrate(name);
         p.sendMessage("§aCrate " + name + " deleted.");
     }
     //#region set
@@ -107,7 +127,7 @@ public class CrateCommands implements TabExecutor {
             return;
         }
         String name = args[1].toLowerCase();
-        Crate crate = plugin.getCrateManager().getCrates().get(name);
+        Crate crate = manager.getCrates().get(name);
         if (crate == null){
             p.sendMessage("§cThis crate doesnt exists.");
             return;
@@ -137,14 +157,14 @@ public class CrateCommands implements TabExecutor {
     private void handleThreeArgs(Player p, Crate crate, String key) {
         switch (key) {
             case "rewards":
-                if (plugin.getCrateManager().getEditing().containsKey(crate.getName())) {
+                if (manager.getEditing().containsKey(crate.getName())) {
                     p.sendMessage(crate.getName() + " is already being edited.");
                     return;
                 }
                 ItemStack[] rewards = crate.getRewards();
                 Inventory inv = Bukkit.createInventory(null, 27, "§6Updated rewards, close to save.");
                 inv.setContents(rewards);
-                plugin.getCrateManager().getEditing().put(crate.getName(), inv);
+                manager.getEditing().put(crate.getName(), inv);
                 p.openInventory(inv);
                 break;
             case "block":
@@ -158,7 +178,7 @@ public class CrateCommands implements TabExecutor {
                 crate.setKeyRequired(true);
                 p.sendMessage("§aBlock linked set to " + targetBlock.getType());
                 p.sendMessage("§6Open by block and key requerid set to true");
-                plugin.getCrateManager().save(crate);
+                manager.save(crate);
                 break;    
             case "remove_block":
                 TextDisplay textDisplay = crate.getTextDisplay();
@@ -166,7 +186,7 @@ public class CrateCommands implements TabExecutor {
                     textDisplay.remove();
                 }
                 p.sendMessage("§aBlock linked removed");
-                plugin.getCrateManager().save(crate);
+                manager.save(crate);
                 crate.setBlockLinked(null);
                 break;
             case "key_item":
@@ -216,7 +236,7 @@ public class CrateCommands implements TabExecutor {
             double cost = Double.parseDouble(value);
             crate.setOpenCost(cost);
             p.sendMessage("§6Cost set to " + cost);
-            plugin.getCrateManager().save(crate);
+            manager.save(crate);
         } catch (NumberFormatException e) {
             p.sendMessage("§cThe value must be a number.");
         }
@@ -227,7 +247,7 @@ public class CrateCommands implements TabExecutor {
             boolean boolValue = Boolean.parseBoolean(value);
             setter.accept(boolValue);
             p.sendMessage(message + boolValue);
-            plugin.getCrateManager().save(crate);
+            manager.save(crate);
         } catch (Exception e) {
             p.sendMessage("§cThe value must be a boolean.");
         }
@@ -247,9 +267,11 @@ public class CrateCommands implements TabExecutor {
         }
 
         String value = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
+        value = value.replace("\\n", "\n");
         text.setText(ChatColor.translateAlternateColorCodes('&', value));
         crate.setDisplayText(value);
-        plugin.getCrateManager().save(crate);
+
+        manager.save(crate);
         p.sendMessage("§6Text display set to " + value);
     }
     
@@ -260,7 +282,7 @@ public class CrateCommands implements TabExecutor {
             return;
         }
         setter.accept(item);
-        plugin.getCrateManager().save(crate);
+        manager.save(crate);
         p.sendMessage(message + item.getType());
     }
     //#region give
@@ -270,7 +292,7 @@ public class CrateCommands implements TabExecutor {
             return;
         }
         String name = args[1].toLowerCase();
-        Crate crate = plugin.getCrateManager().getCrates().get(name);
+        Crate crate = manager.getCrates().get(name);
         if (crate == null){
             sender.sendMessage("§cThis crate doesnt exists.");
             return;
@@ -295,5 +317,22 @@ public class CrateCommands implements TabExecutor {
             return;
         }
         target.getInventory().addItem(crate.getCrateItem());
+    }
+    //#region preview
+    private void previewCommand(Player p, String[] args) {
+        if (args.length != 2) {
+            p.sendMessage("§cUsage: crate preview <name>");
+            return;
+        }
+        String name = args[1].toLowerCase();
+        Crate crate = manager.getCrates().get(name);
+        if (crate == null){
+            p.sendMessage("§cThis crate doesnt exists.");
+            return;
+        }
+        Inventory inv = Bukkit.createInventory(null, 27, "§6Preview " + name);
+        manager.getEditing().put(crate.getName(), inv);
+        inv.setContents(crate.getRewards());
+        p.openInventory(inv);
     }
 }

@@ -43,11 +43,14 @@ public class RewardsPlugin extends JavaPlugin {
     private Playtime playtime;
     private DatabaseManager databaseManager;
 
+    private static RewardsPlugin instance;
+
     private AuthMeApi authMeApi;
 
     public void onEnable() {
 
         saveDefaultConfig();
+        instance = this;
         
         ConfigurationSerialization.registerClass(Crate.class,"Crate");
 
@@ -144,5 +147,8 @@ public class RewardsPlugin extends JavaPlugin {
     }
     public void setRewardsGui(RewardsGui rewardsGui) {
         this.rewardsGui = rewardsGui;
+    }
+    public static RewardsPlugin getInstance() {
+        return instance;
     }
 }
